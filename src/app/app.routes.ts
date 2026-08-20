@@ -1,23 +1,29 @@
 import { Routes } from '@angular/router';
-import { WoModule } from './working/wo-module/wo-module';
-import { MdA6ac2e09 } from './working/wo-module/md-a6ac2e09/md-a6ac2e09';
-import { MdB2412519 } from './working/wo-module/md-b2412519/md-b2412519';
-import { MdB2c17bdf } from './working/wo-module/md-b2c17bdf/md-b2c17bdf';
-import { MdB4c4c7b1 } from './working/wo-module/md-b4c4c7b1/md-b4c4c7b1';
-import { MdB8043c54 } from './working/wo-module/md-b8043c54/md-b8043c54';
-import { MdB9f50faa } from './working/wo-module/md-b9f50faa/md-b9f50faa';
-import { MdC0de7562 } from './working/wo-module/md-c0de7562/md-c0de7562';
-import { MdC98391c6 } from './working/wo-module/md-c98391c6/md-c98391c6';
-import { MdD0112a5a } from './working/wo-module/md-d0112a5a/md-d0112a5a';
-import { MdD148f4b4 } from './working/wo-module/md-d148f4b4/md-d148f4b4';
-import { MdB22b6431 } from './working/wo-module/md-b22b6431/md-b22b6431';
 import { CeLogin } from './core/ce-login/ce-login';
 import { PtHome } from './web/portal/pt-home/pt-home';
+import { WoModule } from './web/working/wo-module/wo-module';
+import { MdA6ac2e09 } from './web/working/wo-module/md-a6ac2e09/md-a6ac2e09';
+import { MdB2412519 } from './web/working/wo-module/md-b2412519/md-b2412519';
+import { MdB2c17bdf } from './web/working/wo-module/md-b2c17bdf/md-b2c17bdf';
+import { MdB4c4c7b1 } from './web/working/wo-module/md-b4c4c7b1/md-b4c4c7b1';
+import { MdB8043c54 } from './web/working/wo-module/md-b8043c54/md-b8043c54';
+import { MdB9f50faa } from './web/working/wo-module/md-b9f50faa/md-b9f50faa';
+import { MdC0de7562 } from './web/working/wo-module/md-c0de7562/md-c0de7562';
+import { MdC98391c6 } from './web/working/wo-module/md-c98391c6/md-c98391c6';
+import { MdD0112a5a } from './web/working/wo-module/md-d0112a5a/md-d0112a5a';
+import { MdD148f4b4 } from './web/working/wo-module/md-d148f4b4/md-d148f4b4';
+import { MdB22b6431 } from './web/working/wo-module/md-b22b6431/md-b22b6431';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '' },
-  { path: 'home', component: PtHome, },
   { path: 'login', component: CeLogin, },
+
+  {
+    path: 'pt',
+    children: [
+      { path: 'home', component: PtHome },
+    ],
+  },
 
   {
     path: 'md', component: WoModule,
