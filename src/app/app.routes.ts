@@ -1,33 +1,44 @@
 import { Routes } from '@angular/router';
 import { CeLogin } from './core/ce-login/ce-login';
 import { PtHome } from './web/portal/pt-home/pt-home';
-import { WoModule } from './web/working/wo-module/wo-module';
-import { MdA6ac2e09 } from './web/working/wo-module/md-a6ac2e09/md-a6ac2e09';
-import { MdB2412519 } from './web/working/wo-module/md-b2412519/md-b2412519';
-import { MdB2c17bdf } from './web/working/wo-module/md-b2c17bdf/md-b2c17bdf';
-import { MdB4c4c7b1 } from './web/working/wo-module/md-b4c4c7b1/md-b4c4c7b1';
-import { MdB8043c54 } from './web/working/wo-module/md-b8043c54/md-b8043c54';
-import { MdB9f50faa } from './web/working/wo-module/md-b9f50faa/md-b9f50faa';
-import { MdC0de7562 } from './web/working/wo-module/md-c0de7562/md-c0de7562';
-import { MdC98391c6 } from './web/working/wo-module/md-c98391c6/md-c98391c6';
-import { MdD0112a5a } from './web/working/wo-module/md-d0112a5a/md-d0112a5a';
-import { MdD148f4b4 } from './web/working/wo-module/md-d148f4b4/md-d148f4b4';
-import { MdB22b6431 } from './web/working/wo-module/md-b22b6431/md-b22b6431';
+import { PtRegister } from './web/portal/pt-register/pt-register';
+import { PtB4c4c7b1 } from './web/portal/pt-b4c4c7b1/pt-b4c4c7b1';
+import { PtC98391c6 } from './web/portal/pt-c98391c6/pt-c98391c6';
+import { PtD0112a5a } from './web/portal/pt-d0112a5a/pt-d0112a5a';
+import { Working } from './web/working/working';
+import { WgDashboard } from './web/working/wg-dashboard/wg-dashboard';
+import { MdA6ac2e09 } from './web/working/md-a6ac2e09/md-a6ac2e09';
+import { MdB2412519 } from './web/working/md-b2412519/md-b2412519';
+import { MdB2c17bdf } from './web/working/md-b2c17bdf/md-b2c17bdf';
+import { MdB4c4c7b1 } from './web/working/md-b4c4c7b1/md-b4c4c7b1';
+import { MdB8043c54 } from './web/working/md-b8043c54/md-b8043c54';
+import { MdB9f50faa } from './web/working/md-b9f50faa/md-b9f50faa';
+import { MdC0de7562 } from './web/working/md-c0de7562/md-c0de7562';
+import { MdC98391c6 } from './web/working/md-c98391c6/md-c98391c6';
+import { MdD0112a5a } from './web/working/md-d0112a5a/md-d0112a5a';
+import { MdD148f4b4 } from './web/working/md-d148f4b4/md-d148f4b4';
+import { MdB22b6431 } from './web/working/md-b22b6431/md-b22b6431';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '' },
   { path: 'login', component: CeLogin, },
 
   {
-    path: 'pt',
+    path: 'portal',
     children: [
-      { path: 'home', component: PtHome },
+      { path: 'home', component: PtHome }, // Componente Inicio
+      { path: 'register', component: PtRegister }, // Componente Registro
+      { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device
+      { path: 'c98391c6', component: PtC98391c6 }, // Componente brand_processor
+      { path: 'd0112a5a', component: PtD0112a5a }, // Componente operating_system
     ],
   },
 
   {
-    path: 'md', component: WoModule,
+    path: 'working', component: Working,
     children: [
+      { path: 'dashboard', component: WgDashboard }, // Componente Panel de Control
+
       { path: 'a6ac2e09', component: MdA6ac2e09 }, // Modulo graphic_card
       { path: 'b22b6431', component: MdB22b6431 }, // Modulo image_ext
       { path: 'b2412519', component: MdB2412519 }, // Modulo user_data

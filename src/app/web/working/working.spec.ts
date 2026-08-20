@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WoModule } from './wo-module';
+import { Working } from './working';
 
-describe('WoModule', () => {
-  let component: WoModule;
-  let fixture: ComponentFixture<WoModule>;
+describe('Working', () => {
+  let component: Working;
+  let fixture: ComponentFixture<Working>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WoModule],
+      imports: [Working],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(WoModule);
+    fixture = TestBed.createComponent(Working);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
