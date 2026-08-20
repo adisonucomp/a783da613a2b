@@ -12,6 +12,7 @@ import { MdC0de7562 } from './working/wo-module/md-c0de7562/md-c0de7562';
 import { MdC98391c6 } from './working/wo-module/md-c98391c6/md-c98391c6';
 import { MdD0112a5a } from './working/wo-module/md-d0112a5a/md-d0112a5a';
 import { MdD148f4b4 } from './working/wo-module/md-d148f4b4/md-d148f4b4';
+import { MdB22b6431 } from './working/wo-module/md-b22b6431/md-b22b6431';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '' },
@@ -25,16 +26,17 @@ export const routes: Routes = [
   {
     path: 'md', component: WoModule,
     children: [
-      { path: 'b4c4c7b1', component: MdB4c4c7b1 }, // Modulo brand_device
-      { path: 'c98391c6', component: MdC98391c6 }, // Modulo brand_processor
-      { path: 'b2c17bdf', component: MdB2c17bdf }, // Modulo type_processor
       { path: 'a6ac2e09', component: MdA6ac2e09 }, // Modulo graphic_card
-      { path: 'd0112a5a', component: MdD0112a5a }, // Modulo operating_system
-      { path: 'b8043c54', component: MdB8043c54 }, // Modulo device
-      { path: 'd148f4b4', component: MdD148f4b4 }, // Modulo image
-      { path: 'c0de7562', component: MdC0de7562 }, // Modulo role
-      { path: 'b2412519', component: MdB2412519 }, // Modulo user
+      { path: 'b22b6431', component: MdB22b6431 }, // Modulo image_ext
+      { path: 'b2412519', component: MdB2412519 }, // Modulo user_data
+      { path: 'b2c17bdf', component: MdB2c17bdf }, // Modulo type_processor
+      { path: 'b4c4c7b1', component: MdB4c4c7b1 }, // Modulo brand_device
+      { path: 'b8043c54', component: MdB8043c54 }, // Modulo device_data
       { path: 'b9f50faa', component: MdB9f50faa }, // Modulo comment
+      { path: 'c0de7562', component: MdC0de7562 }, // Modulo role_data
+      { path: 'c98391c6', component: MdC98391c6 }, // Modulo brand_processor
+      { path: 'd0112a5a', component: MdD0112a5a }, // Modulo operating_system
+      { path: 'd148f4b4', component: MdD148f4b4 }, // Modulo device_image
     ],
   },
 
