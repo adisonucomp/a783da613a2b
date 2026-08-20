@@ -11,16 +11,14 @@ import { MdC98391c6 } from './working/wo-module/md-c98391c6/md-c98391c6';
 import { MdD0112a5a } from './working/wo-module/md-d0112a5a/md-d0112a5a';
 import { MdD148f4b4 } from './working/wo-module/md-d148f4b4/md-d148f4b4';
 import { MdB22b6431 } from './working/wo-module/md-b22b6431/md-b22b6431';
+import { CeLogin } from './core/ce-login/ce-login';
+import { PtHome } from './web/portal/pt-home/pt-home';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '' },
+  { path: 'home', component: PtHome, },
+  { path: 'login', component: CeLogin, },
 
-  {
-    path: 'ex', component: WoExternal,
-    children: [
-      { path: 'login', component: ExLogin }
-    ],
-  },
   {
     path: 'md', component: WoModule,
     children: [
