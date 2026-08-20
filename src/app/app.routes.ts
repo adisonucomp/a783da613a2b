@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { WoExternal } from './working/wo-external/wo-external';
-import { ExLogin } from './working/wo-external/ex-login/ex-login';
 import { WoModule } from './working/wo-module/wo-module';
 import { MdA6ac2e09 } from './working/wo-module/md-a6ac2e09/md-a6ac2e09';
 import { MdB2412519 } from './working/wo-module/md-b2412519/md-b2412519';
