@@ -108,13 +108,9 @@
 }
 
 .modal-form {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
+  height: 100%;
 }
 
-.modal-form .modal-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
+.modal-form .modal-content {
+  height: 100%;
 }

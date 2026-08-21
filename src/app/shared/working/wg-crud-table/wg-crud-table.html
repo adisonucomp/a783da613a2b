@@ -60,13 +60,14 @@
 @if (showFormModal()) {
   <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
+      <form class="modal-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="modal-content">
         <div class="modal-header bg-primary text-white">
           <h2 class="modal-title h5 mb-0">{{ editing() ? 'Editar' : 'Nuevo' }} {{ title }}</h2>
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeFormModal()"></button>
         </div>
-        <form class="modal-form" [formGroup]="form" (ngSubmit)="submit()">
-          <div class="modal-body row g-3">
+          <div class="modal-body">
+            <div class="row g-3">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
                 <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth">
@@ -136,13 +137,14 @@
                 }
               }
             }
+            </div>
           </div>
           <div class="modal-footer">
             <button class="btn btn-outline-secondary" type="button" (click)="closeFormModal()">Cancelar</button>
             <button class="btn btn-primary" type="submit">Guardar</button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   </div>
   <div class="modal-backdrop fade show"></div>
@@ -151,12 +153,12 @@
 @if (showPasswordModal()) {
   <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-      <div class="modal-content">
+      <form class="modal-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div class="modal-content">
         <div class="modal-header bg-primary text-white">
           <h2 class="modal-title h5 mb-0">Cambiar contraseña</h2>
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closePasswordModal()"></button>
         </div>
-        <form class="modal-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label" for="password">Contraseña <span class="text-danger" aria-hidden="true">*</span></label>
@@ -171,8 +173,8 @@
             <button class="btn btn-outline-secondary" type="button" (click)="closePasswordModal()">Cancelar</button>
             <button class="btn btn-primary" type="submit">Actualizar</button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   </div>
   <div class="modal-backdrop fade show"></div>
