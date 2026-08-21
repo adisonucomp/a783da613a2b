@@ -336,6 +336,10 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     return !this.editing() || !field.createOnly;
   }
 
+  hasMultipleVisibleFields(): boolean {
+    return this.fields.filter((field) => this.isFieldVisible(field)).length > 1;
+  }
+
   private get crudService(): WgCrudService {
     return this.service as WgCrudService;
   }
@@ -492,7 +496,13 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
   private showMessage(icon: 'error' | 'success' | 'warning', title: string): void {
     if (this.canDisplayAlerts()) {
-      void Swal.fire({ icon, title });
+      void Swal.fire({
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        confirmButtonText: 'Aceptar',
+        icon,
+        title,
+      });
     }
   }
 
@@ -502,6 +512,8 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     }
 
     const result = await Swal.fire({
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#dc3545',
       confirmButtonText: 'Sí, quitar',

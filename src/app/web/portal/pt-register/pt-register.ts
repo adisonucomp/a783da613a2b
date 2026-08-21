@@ -34,6 +34,9 @@ export class PtRegister {
 
     if (payload.fdPassd !== confirmPassd) {
       void Swal.fire({
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        confirmButtonText: 'Aceptar',
         icon: 'error',
         title: 'Las contraseñas no coinciden',
       });
@@ -43,6 +46,9 @@ export class PtRegister {
     this.authService.registerBuyer(payload satisfies RegisterBuyerPayload).subscribe({
       next: () => {
         void Swal.fire({
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          confirmButtonText: 'Aceptar',
           icon: 'success',
           title: 'Registro completado',
           text: 'Ahora puedes iniciar sesión.',
@@ -50,6 +56,9 @@ export class PtRegister {
       },
       error: () => {
         void Swal.fire({
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          confirmButtonText: 'Aceptar',
           icon: 'error',
           title: 'No fue posible completar el registro',
         });

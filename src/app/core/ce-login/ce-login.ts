@@ -41,6 +41,9 @@ export class CeLogin {
       },
       error: () => {
         void Swal.fire({
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          confirmButtonText: 'Aceptar',
           icon: 'error',
           title: 'Credenciales Invalidas',
         });

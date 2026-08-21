@@ -22,6 +22,8 @@ export class PtNavbar implements OnInit {
 
   async logout(): Promise<void> {
     const result = await Swal.fire({
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       cancelButtonText: 'Cancelar',
       confirmButtonText: 'Continuar',
       confirmButtonColor: '#0d6efd',

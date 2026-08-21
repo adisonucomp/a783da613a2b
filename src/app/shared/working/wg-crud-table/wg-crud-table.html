@@ -69,7 +69,7 @@
           <div class="modal-body row g-3">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
-                <div class="col-12 col-md-6">
+                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields()">
                   <label class="form-label" [for]="'field-' + field.key">{{ field.label }}</label>
                   @if (field.relation) {
                     <div class="position-relative">
@@ -85,7 +85,7 @@
                         (blur)="closeRelationSelector(field)"
                       />
                       @if (activeRelationField() === field.key) {
-                        <div class="relation-options border rounded bg-white shadow-sm">
+                        <div class="relation-options border rounded shadow-sm">
                           @for (option of filteredRelationOptions(field); track option.id) {
                             <button class="relation-option btn btn-link text-start w-100" type="button" (mousedown)="$event.preventDefault()" (click)="selectRelation(field, option)">
                               {{ option.label }}
