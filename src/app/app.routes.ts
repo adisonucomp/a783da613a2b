@@ -19,6 +19,7 @@ import { MdD148f4b4 } from './web/working/md-d148f4b4/md-d148f4b4';
 import { MdB22b6431 } from './web/working/md-b22b6431/md-b22b6431';
 import { WgDashboard } from './web/working/wg-dashboard/wg-dashboard';
 import { Working } from './web/working/working';
+import { authGuard } from './guards/auth/auth-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'portal/home' },
@@ -38,6 +39,8 @@ export const routes: Routes = [
 
   {
     path: 'working', component: Working,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: WgDashboard }, // Componente Panel de Control

@@ -59,10 +59,11 @@ export abstract class CrudDtoService<T extends DtoRecord> {
   }
 
   private getJwtToken(): string | null {
-    if (typeof localStorage === 'undefined') {
+    if (typeof localStorage === 'undefined' || typeof sessionStorage === 'undefined') {
       return null;
     }
 
-    return localStorage.getItem('jwtToken') ?? localStorage.getItem('accessToken') ?? localStorage.getItem('token');
+    const storage = environment.sessionStorage ? sessionStorage : localStorage;
+    return storage.getItem('jwtToken') ?? storage.getItem('accessToken') ?? storage.getItem('token');
   }
 }

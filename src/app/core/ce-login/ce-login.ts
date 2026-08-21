@@ -1,9 +1,9 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SgAuth } from '../../services/backend/java/spring/sg-auth/sg-auth';
+import { AuthSession } from '../../services/core/auth-session/auth-session';
 import { PtFooter } from '../../shared/portal/pt-footer/pt-footer';
 import { PtNavbar } from '../../shared/portal/pt-navbar/pt-navbar';
 
@@ -16,7 +16,7 @@ import { PtNavbar } from '../../shared/portal/pt-navbar/pt-navbar';
 export class CeLogin {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(SgAuth);
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly authSession = inject(AuthSession);
   private readonly router = inject(Router);
 
   readonly loginForm = this.formBuilder.nonNullable.group({
@@ -32,9 +32,7 @@ export class CeLogin {
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: ({ data }) => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem('jwtToken', data.token);
-        }
+        this.authSession.saveToken(data.token);
 
         void this.router.navigate(['/working/dashboard']);
       },
