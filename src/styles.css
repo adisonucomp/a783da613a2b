@@ -1,5 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Las barras nativas deben respetar el tema activo sin necesitar recargar. */
+* {
+  scrollbar-color: var(--bs-secondary-color) var(--bs-tertiary-bg);
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  height: .75rem;
+  width: .75rem;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: var(--bs-tertiary-bg);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: var(--bs-secondary-color);
+  border: 3px solid var(--bs-tertiary-bg);
+  border-radius: 1rem;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--bs-secondary);
+}
+
 .working-content main > router-outlet + * {
   display: flex;
   flex: 1;
