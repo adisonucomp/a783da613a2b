@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.working-sidebar {
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  position: fixed;
+  top: 56px;
+  width: 17.5rem;
+  z-index: 1020;
+}
+
+.nav-link {
+  color: var(--bs-body-color);
+}
+
+.nav-link.active {
+  background-color: var(--bs-primary);
+}

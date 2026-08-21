@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { WgSidebar } from './wg-sidebar';
 
 describe('WgSidebar', () => {
@@ -8,6 +9,7 @@ describe('WgSidebar', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [WgSidebar],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(WgSidebar);

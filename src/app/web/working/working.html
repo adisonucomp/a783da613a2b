@@ -1,4 +1,8 @@
 <app-wg-navbar></app-wg-navbar>
 <app-wg-sidebar></app-wg-sidebar>
-<router-outlet></router-outlet>
-<app-wg-footer></app-wg-footer>
+<div class="working-content" [class.sidebar-visible]="sidebarState.visible()">
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+  <app-wg-footer></app-wg-footer>
+</div>

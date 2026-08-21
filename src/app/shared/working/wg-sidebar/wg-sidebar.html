@@ -1,1 +1,46 @@
-<p>wg-sidebar works!</p>
+@if (sidebarState.visible()) {
+<aside class="working-sidebar bg-body-tertiary border-end">
+  <div class="px-3 py-3 border-bottom">
+    <span class="text-uppercase text-body-secondary small fw-semibold">Módulos</span>
+  </div>
+
+  <nav class="nav nav-pills flex-column gap-1 p-2" aria-label="Módulos de gestión">
+    <a class="nav-link" routerLink="/working/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <i class="bi bi-speedometer2 me-2"></i>Panel de control
+    </a>
+    <a class="nav-link" routerLink="/working/a6ac2e09" routerLinkActive="active">
+      <i class="bi bi-gpu-card me-2"></i>Tarjetas gráficas
+    </a>
+    <a class="nav-link" routerLink="/working/b22b6431" routerLinkActive="active">
+      <i class="bi bi-file-earmark-image me-2"></i>Extensiones de imágenes
+    </a>
+    <a class="nav-link" routerLink="/working/b2412519" routerLinkActive="active">
+      <i class="bi bi-people me-2"></i>Usuarios
+    </a>
+    <a class="nav-link" routerLink="/working/b2c17bdf" routerLinkActive="active">
+      <i class="bi bi-cpu me-2"></i>Tipos de procesador
+    </a>
+    <a class="nav-link" routerLink="/working/b4c4c7b1" routerLinkActive="active">
+      <i class="bi bi-bookmark-star me-2"></i>Marcas de dispositivos
+    </a>
+    <a class="nav-link" routerLink="/working/b8043c54" routerLinkActive="active">
+      <i class="bi bi-pc-display me-2"></i>Dispositivos
+    </a>
+    <a class="nav-link" routerLink="/working/b9f50faa" routerLinkActive="active">
+      <i class="bi bi-chat-left-text me-2"></i>Comentarios
+    </a>
+    <a class="nav-link" routerLink="/working/c0de7562" routerLinkActive="active">
+      <i class="bi bi-person-gear me-2"></i>Roles
+    </a>
+    <a class="nav-link" routerLink="/working/c98391c6" routerLinkActive="active">
+      <i class="bi bi-cpu-fill me-2"></i>Marcas de procesadores
+    </a>
+    <a class="nav-link" routerLink="/working/d0112a5a" routerLinkActive="active">
+      <i class="bi bi-window-stack me-2"></i>Sistemas operativos
+    </a>
+    <a class="nav-link" routerLink="/working/d148f4b4" routerLinkActive="active">
+      <i class="bi bi-images me-2"></i>Imágenes de dispositivos
+    </a>
+  </nav>
+</aside>
+}

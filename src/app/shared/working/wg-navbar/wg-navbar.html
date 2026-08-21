@@ -1,5 +1,14 @@
 <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
   <div class="container-fluid">
+    <button
+      class="btn btn-outline-light border-0 me-2"
+      type="button"
+      aria-label="Mostrar u ocultar menú lateral"
+      [attr.aria-expanded]="sidebarState.visible()"
+      (click)="sidebarState.toggle()"
+    >
+      <i class="bi bi-list fs-4"></i>
+    </button>
     <a class="navbar-brand" href="#">Gestion</a>
     <button
       class="navbar-toggler"
