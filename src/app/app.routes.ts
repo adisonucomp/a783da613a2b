@@ -20,7 +20,7 @@ import { MdD148f4b4 } from './web/working/md-d148f4b4/md-d148f4b4';
 import { MdB22b6431 } from './web/working/md-b22b6431/md-b22b6431';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: '' },
+  { path: '', pathMatch: 'full', redirectTo: 'portal/home' },
   { path: 'login', component: CeLogin, },
 
   {
