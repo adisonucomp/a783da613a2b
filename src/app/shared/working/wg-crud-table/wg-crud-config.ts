@@ -57,7 +57,7 @@ export const deviceDataConfig: WgCrudConfig = {
     { key: 'graphicCardId', label: 'Tarjeta Gráfica', relation: 'graphic-card' },
     { key: 'operatingSystemId', label: 'Sistema Operativo', relation: 'operating-system' },
     { key: 'typeProcessorId', label: 'Tipo de Procesador', relation: 'type-processor' },
-    { key: 'fdDetail', label: 'Detalle', type: 'textarea', fullWidth: true, required: false },
+    { key: 'fdDetail', label: 'Detalle', type: 'textarea', fullWidth: true, required: false, tableDisplay: 'detail' },
     { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };

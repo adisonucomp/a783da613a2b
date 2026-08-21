@@ -44,7 +44,23 @@
                 <td>{{ record.idRegister }}</td>
                 @for (field of fields; track field.key) {
                   @if (!field.createOnly) {
-                    <td>{{ value(record, field) }}</td>
+                    <td>
+                      @if (field.tableDisplay === 'detail') {
+                        <button class="btn btn-outline-primary btn-sm" type="button" (click)="$event.stopPropagation(); openDetailModal(record, field)">
+                          Consultar
+                        </button>
+                      } @else if (field.type === 'image') {
+                        @if (tableImagePreview(record, field); as imagePreview) {
+                          <button class="table-image-button" type="button" (click)="$event.stopPropagation(); openImageModal(imagePreview)">
+                            <img class="table-image-preview" [src]="imagePreview" alt="Ver imagen del producto" />
+                          </button>
+                        } @else {
+                          <span class="text-body-secondary">Sin imagen</span>
+                        }
+                      } @else {
+                        {{ value(record, field) }}
+                      }
+                    </td>
                   }
                 }
               </tr>
@@ -145,6 +161,46 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+
+@if (showImageModal()) {
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title h5 mb-0">Imagen</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeImageModal()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img class="modal-image-preview img-fluid" [src]="selectedImage()" alt="Imagen ampliada del producto" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" type="button" (click)="closeImageModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+
+@if (showDetailModal()) {
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title h5 mb-0">{{ detailTitle() }}</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeDetailModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="detail-content mb-0">{{ detailContent() }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary" type="button" (click)="closeDetailModal()">Cerrar</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="modal-backdrop fade show"></div>

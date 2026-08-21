@@ -33,6 +33,7 @@ export interface WgCrudField {
   relation?: WgRelation;
   readonly?: boolean;
   required?: boolean;
+  tableDisplay?: 'detail';
   type?: 'date' | 'email' | 'image' | 'number' | 'password' | 'text' | 'textarea' | 'time';
 }
 
@@ -98,7 +99,12 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   readonly relationSearch = signal<Record<string, string>>({});
   readonly selectedRecord = signal<WgRecord | null>(null);
   readonly showFormModal = signal(false);
+  readonly showDetailModal = signal(false);
+  readonly showImageModal = signal(false);
   readonly showPasswordModal = signal(false);
+  readonly detailContent = signal('');
+  readonly detailTitle = signal('Detalle');
+  readonly selectedImage = signal('');
   readonly tableVisible = signal(false);
 
   ngAfterViewInit(): void {
@@ -203,6 +209,26 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
   closeFormModal(): void {
     this.showFormModal.set(false);
+  }
+
+  openDetailModal(record: WgRecord, field: WgCrudField): void {
+    this.detailTitle.set(field.label);
+    this.detailContent.set(String(record[field.key] ?? 'Sin información disponible.'));
+    this.showDetailModal.set(true);
+  }
+
+  closeDetailModal(): void {
+    this.showDetailModal.set(false);
+  }
+
+  openImageModal(image: string): void {
+    this.selectedImage.set(image);
+    this.showImageModal.set(true);
+  }
+
+  closeImageModal(): void {
+    this.showImageModal.set(false);
+    this.selectedImage.set('');
   }
 
   openPasswordModal(record: WgRecord): void {
@@ -372,6 +398,11 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
   imageFileName(field: WgCrudField): string | undefined {
     return this.imageNames()[field.key];
+  }
+
+  tableImagePreview(record: WgRecord, field: WgCrudField): string | undefined {
+    const image = record[field.key];
+    return typeof image === 'string' && image ? this.toImagePreview(image) : undefined;
   }
 
   onImageSelected(field: WgCrudField, event: Event): void {
