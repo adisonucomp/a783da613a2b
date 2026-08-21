@@ -13,7 +13,7 @@
               <label class="form-label" for="fdLogin">Usuario</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-person"></i></span>
-                <input id="fdLogin" class="form-control" type="text" formControlName="fdLogin" autocomplete="username" />
+                <input id="fdLogin" class="form-control" type="text" formControlName="fdLogin" autocomplete="username" [readOnly]="loading()" />
               </div>
               @if (loginForm.controls.fdLogin.touched && loginForm.controls.fdLogin.invalid) {
                 <div class="invalid-feedback d-block">El usuario es obligatorio.</div>
@@ -24,15 +24,19 @@
               <label class="form-label" for="fdPassd">Contraseña</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input id="fdPassd" class="form-control" type="password" formControlName="fdPassd" autocomplete="current-password" />
+                <input id="fdPassd" class="form-control" type="password" formControlName="fdPassd" autocomplete="current-password" [readOnly]="loading()" />
               </div>
               @if (loginForm.controls.fdPassd.touched && loginForm.controls.fdPassd.invalid) {
                 <div class="invalid-feedback d-block">La contraseña es obligatoria.</div>
               }
             </div>
 
-            <button class="btn btn-primary w-100" type="submit">
-              <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+            <button class="btn btn-primary w-100" type="submit" [disabled]="loading()">
+              @if (loading()) {
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Ingresando...
+              } @else {
+                <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+              }
             </button>
           </form>
         </div>

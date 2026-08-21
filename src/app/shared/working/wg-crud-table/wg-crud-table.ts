@@ -242,7 +242,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   }
 
   private async initializeDataTable(): Promise<void> {
-    if (!this.tableIsReady || !this.dataTableElement || !isPlatformBrowser(this.platformId)) {
+    if (!this.tableIsReady || !this.dataTableElement || !this.canUseDataTable()) {
       return;
     }
 
@@ -310,6 +310,10 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   }
 
   private canDisplayAlerts(): boolean {
+    return isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function';
+  }
+
+  private canUseDataTable(): boolean {
     return isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function';
   }
 }

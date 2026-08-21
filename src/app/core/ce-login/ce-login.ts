@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SgAuth } from '../../services/backend/java/spring/sg-auth/sg-auth';
 import { AuthSession } from '../../services/core/auth-session/auth-session';
@@ -23,16 +24,18 @@ export class CeLogin {
     fdLogin: ['', Validators.required],
     fdPassd: ['', Validators.required],
   });
+  readonly loading = signal(false);
 
   submit(): void {
-    if (this.loginForm.invalid) {
+    if (this.loginForm.invalid || this.loading()) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    this.authService.login(this.loginForm.getRawValue()).subscribe({
+    this.loading.set(true);
+    this.authService.login(this.loginForm.getRawValue()).pipe(finalize(() => this.loading.set(false))).subscribe({
       next: ({ data }) => {
-        this.authSession.saveToken(data.token);
+        this.authSession.saveToken(data.token, data.expiresAt);
 
         void this.router.navigate(['/working/dashboard']);
       },
