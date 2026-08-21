@@ -2,6 +2,7 @@
   display: flex;
   flex: 1;
   min-height: 0;
+  min-width: 0;
 }
 
 .container-fluid {
@@ -9,6 +10,7 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
 }
 
 .table-card {
@@ -16,6 +18,7 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
 }
 
 .table-card .card-body,
@@ -24,6 +27,13 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  min-width: 0;
+}
+
+.table-card .table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 :host ::ng-deep .table-card th,
@@ -36,6 +46,12 @@
   flex: 1;
   flex-direction: column;
   min-height: 100%;
+  min-width: max-content;
+}
+
+:host ::ng-deep .table-card table.dataTable {
+  min-width: 100% !important;
+  width: max-content !important;
 }
 
 :host ::ng-deep .table-card .dt-layout-row:nth-child(2) {

@@ -58,12 +58,7 @@ export class AuthSession {
   isAuthenticated(): boolean {
     this.stateVersion();
     const token = this.getToken();
-    if (!token || this.isExpired(token)) {
-      this.clear();
-      return false;
-    }
-
-    return true;
+    return !!token && !this.isExpired(token);
   }
 
   isAdministrator(): boolean {
