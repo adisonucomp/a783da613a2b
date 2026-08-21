@@ -1,0 +1,5 @@
+:host { display: block; }
+.dashboard-card { color: inherit; transition: box-shadow .15s ease, transform .15s ease; }
+.dashboard-card:hover { box-shadow: var(--bs-box-shadow) !important; transform: translateY(-2px); }
+.dashboard-card:focus-visible { outline: 3px solid var(--bs-primary); outline-offset: 2px; }
+.dashboard-icon { align-items: center; background-color: var(--bs-primary-bg-subtle); border-radius: var(--bs-border-radius); display: inline-flex; font-size: 1.5rem; height: 3.25rem; justify-content: center; width: 3.25rem; }
