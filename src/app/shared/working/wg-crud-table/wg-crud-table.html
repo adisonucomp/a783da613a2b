@@ -59,13 +59,13 @@
 
 @if (showFormModal()) {
   <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
           <h2 class="modal-title h5 mb-0">{{ editing() ? 'Editar' : 'Nuevo' }} {{ title }}</h2>
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeFormModal()"></button>
         </div>
-        <form [formGroup]="form" (ngSubmit)="submit()">
+        <form class="modal-form" [formGroup]="form" (ngSubmit)="submit()">
           <div class="modal-body row g-3">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
@@ -81,6 +81,7 @@
                         type="search"
                         autocomplete="off"
                         placeholder="Buscar y seleccionar..."
+                        [readOnly]="field.readonly"
                         [value]="relationSearch()[field.key] ?? ''"
                         (focus)="openRelationSelector(field)"
                         (input)="updateRelationSearch(field, $any($event.target).value)"
@@ -149,13 +150,13 @@
 
 @if (showPasswordModal()) {
   <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
           <h2 class="modal-title h5 mb-0">Cambiar contraseña</h2>
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closePasswordModal()"></button>
         </div>
-        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <form class="modal-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label" for="password">Contraseña <span class="text-danger" aria-hidden="true">*</span></label>
