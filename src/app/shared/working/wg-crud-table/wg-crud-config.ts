@@ -45,6 +45,7 @@ export const brandDeviceConfig: WgCrudConfig = {
 export const deviceDataConfig: WgCrudConfig = {
   title: 'Dispositivos',
   fields: [
+    { key: 'fdCode', label: 'Código' },
     { key: 'fdName', label: 'Nombre' },
     { key: 'fdPrice', label: 'Precio', type: 'number' },
     { key: 'fdStock', label: 'Stock', type: 'number' },
