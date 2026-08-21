@@ -5,8 +5,7 @@ import { PtRegister } from './web/portal/pt-register/pt-register';
 import { PtB4c4c7b1 } from './web/portal/pt-b4c4c7b1/pt-b4c4c7b1';
 import { PtC98391c6 } from './web/portal/pt-c98391c6/pt-c98391c6';
 import { PtD0112a5a } from './web/portal/pt-d0112a5a/pt-d0112a5a';
-import { Working } from './web/working/working';
-import { WgDashboard } from './web/working/wg-dashboard/wg-dashboard';
+import { Portal } from './web/portal/portal';
 import { MdA6ac2e09 } from './web/working/md-a6ac2e09/md-a6ac2e09';
 import { MdB2412519 } from './web/working/md-b2412519/md-b2412519';
 import { MdB2c17bdf } from './web/working/md-b2c17bdf/md-b2c17bdf';
@@ -18,13 +17,15 @@ import { MdC98391c6 } from './web/working/md-c98391c6/md-c98391c6';
 import { MdD0112a5a } from './web/working/md-d0112a5a/md-d0112a5a';
 import { MdD148f4b4 } from './web/working/md-d148f4b4/md-d148f4b4';
 import { MdB22b6431 } from './web/working/md-b22b6431/md-b22b6431';
+import { WgDashboard } from './web/working/wg-dashboard/wg-dashboard';
+import { Working } from './web/working/working';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'portal/home' },
   { path: 'login', component: CeLogin, },
 
   {
-    path: 'portal',
+    path: 'portal', component: Portal,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: PtHome }, // Componente Inicio
