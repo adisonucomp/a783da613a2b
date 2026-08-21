@@ -10,7 +10,7 @@ import { AuthSession } from '../auth-session/auth-session';
 interface SessionSyncEvent {
   expiresAt?: string;
   token?: string;
-  type: 'logout' | 'refreshed';
+  type: 'authenticated' | 'logout' | 'refreshed';
   value: number;
 }
 
@@ -70,6 +70,16 @@ export class SessionTimer {
 
   logout(): void {
     this.endSession(true);
+  }
+
+  synchronizeAuthenticatedSession(token: string, expiresAt: string): void {
+    this.publishSessionSynchronization({
+      expiresAt,
+      token,
+      type: 'authenticated',
+      value: Date.now(),
+    });
+    this.start();
   }
 
   private tick(): void {
@@ -274,6 +284,10 @@ export class SessionTimer {
       return;
     }
 
+    if (event.type === 'authenticated') {
+      return;
+    }
+
     // En producción el token permanece en sessionStorage. Cada pestaña renueva
     // su propio token sin transferirlo al almacenamiento compartido.
     void this.extendSessionInCurrentContext();
@@ -303,7 +317,7 @@ export class SessionTimer {
       return;
     }
 
-    const storageEvent = environment.sessionStorage && event.type === 'refreshed'
+    const storageEvent = environment.sessionStorage && (event.type === 'authenticated' || event.type === 'refreshed')
       ? { ...event, token: undefined }
       : event;
     localStorage.setItem(this.sessionSyncKey, JSON.stringify(storageEvent));

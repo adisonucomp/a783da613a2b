@@ -36,6 +36,9 @@
             <span class="navbar-text text-white align-self-center border border-light rounded px-2 py-1"><i class="bi bi-clock me-1"></i>{{ remainingTime }}</span>
           }
           <app-theme-toggle></app-theme-toggle>
+          @if (authSession.isAdministrator()) {
+            <a class="btn btn-outline-light" routerLink="/working/dashboard">Gestión</a>
+          }
           <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
         } @else {
           <app-theme-toggle></app-theme-toggle>
