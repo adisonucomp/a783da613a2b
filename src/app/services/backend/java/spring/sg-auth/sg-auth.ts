@@ -36,6 +36,10 @@ export class SgAuth {
     return this.http.post<ApiResponse<JwtTokenDto>>(`${this.url}/login`, payload);
   }
 
+  refresh(token: string): Observable<ApiResponse<JwtTokenDto>> {
+    return this.http.post<ApiResponse<JwtTokenDto>>(`${this.url}/refresh`, { token });
+  }
+
   registerBuyer(payload: RegisterBuyerPayload): Observable<ApiResponse<unknown>> {
     return this.http.post<ApiResponse<unknown>>(`${this.url}/register/comprador`, payload);
   }

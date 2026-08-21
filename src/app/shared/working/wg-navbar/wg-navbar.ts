@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthSession } from '../../../services/core/auth-session/auth-session';
 import { SessionTimer } from '../../../services/core/session-timer/session-timer';
@@ -16,7 +16,6 @@ export class WgNavbar implements OnInit {
   readonly sidebarState = inject(WgSidebarService);
   readonly authSession = inject(AuthSession);
   readonly sessionTimer = inject(SessionTimer);
-  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.sessionTimer.start();
@@ -35,9 +34,7 @@ export class WgNavbar implements OnInit {
     });
 
     if (result.isConfirmed) {
-      this.sessionTimer.stop();
-      this.authSession.clear();
-      await this.router.navigate(['/login']);
+      this.sessionTimer.logout();
     }
   }
 }
