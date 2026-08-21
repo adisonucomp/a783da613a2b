@@ -1,0 +1,33 @@
+<div class="dropdown">
+  <button
+    class="btn btn-outline-light dropdown-toggle"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    aria-label="Cambiar tema"
+  >
+    @switch (theme.mode()) {
+      @case ('light') { <i class="bi bi-sun-fill"></i> }
+      @case ('dark') { <i class="bi bi-moon-stars-fill"></i> }
+      @default { <i class="bi bi-circle-half"></i> }
+    }
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end shadow">
+    <li>
+      <button class="dropdown-item" [class.active]="theme.mode() === 'light'" type="button" (click)="setTheme('light')">
+        <i class="bi bi-sun-fill me-2"></i>Light
+      </button>
+    </li>
+    <li>
+      <button class="dropdown-item" [class.active]="theme.mode() === 'dark'" type="button" (click)="setTheme('dark')">
+        <i class="bi bi-moon-stars-fill me-2"></i>Dark
+      </button>
+    </li>
+    <li>
+      <button class="dropdown-item" [class.active]="theme.mode() === 'auto'" type="button" (click)="setTheme('auto')">
+        <i class="bi bi-circle-half me-2"></i>Auto
+        @if (theme.mode() === 'auto') { <i class="bi bi-check2 float-end"></i> }
+      </button>
+    </li>
+  </ul>
+</div>

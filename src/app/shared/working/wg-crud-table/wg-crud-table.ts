@@ -3,11 +3,32 @@ import { AfterViewInit, Component, ElementRef, Input, OnDestroy, PLATFORM_ID, Vi
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import Swal from 'sweetalert2';
+import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg-a6ac2e09';
+import { SgB22b6431 } from '../../../services/backend/java/spring/sg-b22b6431/sg-b22b6431';
+import { SgB2412519 } from '../../../services/backend/java/spring/sg-b2412519/sg-b2412519';
+import { SgB2c17bdf } from '../../../services/backend/java/spring/sg-b2c17bdf/sg-b2c17bdf';
+import { SgB4c4c7b1 } from '../../../services/backend/java/spring/sg-b4c4c7b1/sg-b4c4c7b1';
+import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg-b8043c54';
+import { SgC0de7562 } from '../../../services/backend/java/spring/sg-c0de7562/sg-c0de7562';
+import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
+import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
+
+export type WgRelation =
+  | 'brand-device'
+  | 'brand-processor'
+  | 'device-data'
+  | 'graphic-card'
+  | 'image-ext'
+  | 'operating-system'
+  | 'role-data'
+  | 'type-processor'
+  | 'user-data';
 
 export interface WgCrudField {
   createOnly?: boolean;
   label: string;
   key: string;
+  relation?: WgRelation;
   required?: boolean;
   type?: 'date' | 'email' | 'number' | 'password' | 'text' | 'textarea' | 'time';
 }
@@ -21,6 +42,11 @@ interface WgCrudService {
 }
 
 type WgRecord = Record<string, unknown> & { idRegister?: number };
+
+interface RelationOption {
+  id: number;
+  label: string;
+}
 
 @Component({
   imports: [ReactiveFormsModule],
@@ -38,6 +64,17 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly lookupServices: Record<WgRelation, { getAll: () => Observable<unknown[]> }> = {
+    'brand-device': inject(SgB4c4c7b1),
+    'brand-processor': inject(SgC98391c6),
+    'device-data': inject(SgB8043c54),
+    'graphic-card': inject(SgA6ac2e09),
+    'image-ext': inject(SgB22b6431),
+    'operating-system': inject(SgD0112a5a),
+    'role-data': inject(SgC0de7562),
+    'type-processor': inject(SgB2c17bdf),
+    'user-data': inject(SgB2412519),
+  };
   private dataTable?: { destroy: () => void };
   private loadId = 0;
   private tableIsReady = false;
@@ -50,6 +87,9 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     password: ['', Validators.required],
   });
   readonly records = signal<WgRecord[]>([]);
+  readonly activeRelationField = signal<string | null>(null);
+  readonly relationOptions = signal<Partial<Record<WgRelation, RelationOption[]>>>({});
+  readonly relationSearch = signal<Record<string, string>>({});
   readonly selectedRecord = signal<WgRecord | null>(null);
   readonly showFormModal = signal(false);
   readonly showPasswordModal = signal(false);
@@ -68,6 +108,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     this.editing.set(false);
     this.selectedId = undefined;
     this.buildForm();
+    this.loadRelationOptions();
     this.showFormModal.set(true);
   }
 
@@ -98,6 +139,39 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     }
   }
 
+  openRelationSelector(field: WgCrudField): void {
+    this.activeRelationField.set(field.key);
+  }
+
+  closeRelationSelector(field: WgCrudField): void {
+    setTimeout(() => {
+      if (this.activeRelationField() === field.key) {
+        this.activeRelationField.set(null);
+      }
+    });
+  }
+
+  updateRelationSearch(field: WgCrudField, value: string): void {
+    this.relationSearch.update((search) => ({ ...search, [field.key]: value }));
+    this.form.get(field.key)?.setValue('');
+    this.activeRelationField.set(field.key);
+  }
+
+  selectRelation(field: WgCrudField, option: RelationOption): void {
+    this.form.get(field.key)?.setValue(option.id);
+    this.relationSearch.update((search) => ({ ...search, [field.key]: option.label }));
+    this.activeRelationField.set(null);
+  }
+
+  filteredRelationOptions(field: WgCrudField): RelationOption[] {
+    if (!field.relation) {
+      return [];
+    }
+
+    const search = (this.relationSearch()[field.key] ?? '').trim().toLowerCase();
+    return (this.relationOptions()[field.relation] ?? []).filter((option) => option.label.toLowerCase().includes(search));
+  }
+
   openEdit(record: WgRecord): void {
     if (typeof record.idRegister !== 'number') {
       return;
@@ -106,6 +180,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     this.editing.set(true);
     this.selectedId = record.idRegister;
     this.buildForm(record);
+    this.loadRelationOptions();
     this.showFormModal.set(true);
   }
 
@@ -271,6 +346,14 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     for (const [key, control] of Object.entries(controls)) {
       this.form.addControl(key, control);
     }
+
+    this.relationSearch.set(
+      Object.fromEntries(
+        this.fields
+          .filter((field) => field.relation && this.isFieldVisible(field))
+          .map((field) => [field.key, String(record[field.key] ?? '')]),
+      ),
+    );
   }
 
   private getPayload(): Record<string, unknown> {
@@ -283,6 +366,66 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     }
 
     return payload;
+  }
+
+  private loadRelationOptions(): void {
+    const relations = new Set(
+      this.fields
+        .filter((field) => field.relation && this.isFieldVisible(field))
+        .map((field) => field.relation as WgRelation),
+    );
+
+    for (const relation of relations) {
+      this.lookupServices[relation].getAll().subscribe({
+        next: (items) => {
+          this.relationOptions.update((options) => ({
+            ...options,
+            [relation]: this.toRelationOptions(relation, items),
+          }));
+          this.syncRelationLabels(relation);
+        },
+        error: () => {
+          this.relationOptions.update((options) => ({ ...options, [relation]: [] }));
+        },
+      });
+    }
+  }
+
+  private toRelationOptions(relation: WgRelation, items: unknown[]): RelationOption[] {
+    return items
+      .map((item) => {
+        const record = item as WgRecord;
+        const id = record.idRegister;
+        if (typeof id !== 'number') {
+          return null;
+        }
+
+        return { id, label: this.relationLabel(relation, record) };
+      })
+      .filter((option): option is RelationOption => option !== null);
+  }
+
+  private relationLabel(relation: WgRelation, record: WgRecord): string {
+    if (relation === 'user-data') {
+      return String(record['fdLogin'] ?? record['fdEmail'] ?? record.idRegister);
+    }
+
+    return String(record['name'] ?? record['fdName'] ?? record['fdValue'] ?? record['fdData'] ?? record.idRegister);
+  }
+
+  private syncRelationLabels(relation: WgRelation): void {
+    const options = this.relationOptions()[relation] ?? [];
+    this.relationSearch.update((search) => {
+      const updatedSearch = { ...search };
+      for (const field of this.fields.filter((item) => item.relation === relation && this.isFieldVisible(item))) {
+        const selectedId = this.form.get(field.key)?.value;
+        const option = options.find((item) => item.id === Number(selectedId));
+        if (option) {
+          updatedSearch[field.key] = option.label;
+        }
+      }
+      return updatedSearch;
+    });
   }
 
   private async initializeDataTable(loadId: number): Promise<void> {

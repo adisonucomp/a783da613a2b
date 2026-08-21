@@ -1,1 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+
+.working-content main > router-outlet + * {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+[data-bs-theme='dark'] .swal2-popup {
+  background: var(--bs-dark);
+  color: var(--bs-light);
+}
+
+[data-bs-theme='dark'] .swal2-title,
+[data-bs-theme='dark'] .swal2-html-container,
+[data-bs-theme='dark'] .swal2-content {
+  color: var(--bs-light);
+}
+
+[data-bs-theme='dark'] .swal2-input,
+[data-bs-theme='dark'] .swal2-select,
+[data-bs-theme='dark'] .swal2-textarea {
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
+}
+
+[data-bs-theme='dark'] .swal2-loader {
+  border-color: var(--bs-primary) transparent var(--bs-primary) transparent;
+}

@@ -24,7 +24,7 @@
   </div>
 
   @if (tableVisible()) {
-    <div class="card shadow-sm">
+    <div class="card shadow-sm table-card">
     <div class="card-body">
       <div class="table-responsive">
           <table #dataTable class="table table-hover align-middle w-100">
@@ -71,7 +71,32 @@
               @if (isFieldVisible(field)) {
                 <div class="col-12 col-md-6">
                   <label class="form-label" [for]="'field-' + field.key">{{ field.label }}</label>
-                  @if (field.type === 'textarea') {
+                  @if (field.relation) {
+                    <div class="position-relative">
+                      <input
+                        class="form-control"
+                        [id]="'field-' + field.key"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Buscar y seleccionar..."
+                        [value]="relationSearch()[field.key] ?? ''"
+                        (focus)="openRelationSelector(field)"
+                        (input)="updateRelationSearch(field, $any($event.target).value)"
+                        (blur)="closeRelationSelector(field)"
+                      />
+                      @if (activeRelationField() === field.key) {
+                        <div class="relation-options border rounded bg-white shadow-sm">
+                          @for (option of filteredRelationOptions(field); track option.id) {
+                            <button class="relation-option btn btn-link text-start w-100" type="button" (mousedown)="$event.preventDefault()" (click)="selectRelation(field, option)">
+                              {{ option.label }}
+                            </button>
+                          } @empty {
+                            <span class="d-block px-3 py-2 text-body-secondary">No hay opciones disponibles.</span>
+                          }
+                        </div>
+                      }
+                    </div>
+                  } @else if (field.type === 'textarea') {
                     <textarea class="form-control" [id]="'field-' + field.key" rows="3" [formControlName]="field.key"></textarea>
                   } @else {
                     <input class="form-control" [id]="'field-' + field.key" [type]="field.type ?? 'text'" [formControlName]="field.key" />

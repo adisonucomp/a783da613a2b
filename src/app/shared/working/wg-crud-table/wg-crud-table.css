@@ -1,9 +1,69 @@
 :host {
-  display: block;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.container-fluid {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.table-card .card-body,
+.table-card .table-responsive {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+:host ::ng-deep .table-card th,
+:host ::ng-deep .table-card td {
+  text-align: center;
+}
+
+:host ::ng-deep .table-card .dt-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+:host ::ng-deep .table-card .dt-layout-row:nth-child(2) {
+  flex: 1;
 }
 
 .selectable-row {
   cursor: pointer;
+}
+
+.relation-options {
+  left: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 1070;
+}
+
+.relation-option {
+  border-radius: 0;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.relation-option:hover {
+  background-color: var(--bs-primary-bg-subtle);
 }
 
 .modal {

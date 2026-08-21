@@ -3,10 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthSession } from '../../../services/core/auth-session/auth-session';
 import { SessionTimer } from '../../../services/core/session-timer/session-timer';
+import { ThemeToggle } from '../../theme-toggle/theme-toggle';
 import { WgSidebar as WgSidebarService } from '../../../services/working/wg-sidebar/wg-sidebar';
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, ThemeToggle],
   selector: 'app-wg-navbar',
   styleUrl: './wg-navbar.css',
   templateUrl: './wg-navbar.html',

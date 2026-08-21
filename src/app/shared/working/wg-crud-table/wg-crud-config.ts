@@ -25,7 +25,7 @@ export const userDataConfig: WgCrudConfig = {
     { key: 'fdPassd', label: 'Contraseña', type: 'password', createOnly: true },
     { key: 'fdName', label: 'Nombres' },
     { key: 'fdSrnm', label: 'Apellidos' },
-    { key: 'roleDataId', label: 'Id. rol', type: 'number' },
+    { key: 'roleDataId', label: 'Rol', relation: 'role-data' },
   ],
 };
 
@@ -33,7 +33,7 @@ export const typeProcessorConfig: WgCrudConfig = {
   title: 'Tipos de procesador',
   fields: [
     { key: 'fdName', label: 'Nombre' },
-    { key: 'brandProcessorId', label: 'Id. marca de procesador', type: 'number' },
+    { key: 'brandProcessorId', label: 'Marca de procesador', relation: 'brand-processor' },
   ],
 };
 
@@ -54,10 +54,10 @@ export const deviceDataConfig: WgCrudConfig = {
     { key: 'fdScreenSize', label: 'Tamaño de pantalla' },
     { key: 'fdRelease', label: 'Fecha de lanzamiento', type: 'date' },
     { key: 'fdImage', label: 'Imagen' },
-    { key: 'brandDeviceId', label: 'Id. marca de dispositivo', type: 'number' },
-    { key: 'graphicCardId', label: 'Id. tarjeta gráfica', type: 'number' },
-    { key: 'operatingSystemId', label: 'Id. sistema operativo', type: 'number' },
-    { key: 'typeProcessorId', label: 'Id. tipo de procesador', type: 'number' },
+    { key: 'brandDeviceId', label: 'Marca de dispositivo', relation: 'brand-device' },
+    { key: 'graphicCardId', label: 'Tarjeta gráfica', relation: 'graphic-card' },
+    { key: 'operatingSystemId', label: 'Sistema operativo', relation: 'operating-system' },
+    { key: 'typeProcessorId', label: 'Tipo de procesador', relation: 'type-processor' },
   ],
 };
 
@@ -68,8 +68,8 @@ export const commentConfig: WgCrudConfig = {
     { key: 'fdRating', label: 'Calificación', type: 'number' },
     { key: 'fdDate', label: 'Fecha', type: 'date' },
     { key: 'fdHour', label: 'Hora', type: 'time' },
-    { key: 'deviceId', label: 'Id. dispositivo', type: 'number' },
-    { key: 'userId', label: 'Id. usuario', type: 'number' },
+    { key: 'deviceId', label: 'Dispositivo', relation: 'device-data' },
+    { key: 'userId', label: 'Usuario', relation: 'user-data' },
   ],
 };
 
@@ -92,7 +92,7 @@ export const deviceImageConfig: WgCrudConfig = {
   title: 'Imágenes de dispositivos',
   fields: [
     { key: 'fdData', label: 'Datos de imagen', type: 'textarea' },
-    { key: 'deviceId', label: 'Id. dispositivo', type: 'number' },
-    { key: 'imageExtId', label: 'Id. extensión', type: 'number' },
+    { key: 'deviceId', label: 'Dispositivo', relation: 'device-data' },
+    { key: 'imageExtId', label: 'Extensión de imagen', relation: 'image-ext' },
   ],
 };
