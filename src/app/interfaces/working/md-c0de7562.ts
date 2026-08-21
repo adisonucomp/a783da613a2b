@@ -1,1 +1,4 @@
-export interface MdC0de7562 {}
+export interface MdC0de7562 {
+  idRegister?: number;
+  fdName: string;
+}

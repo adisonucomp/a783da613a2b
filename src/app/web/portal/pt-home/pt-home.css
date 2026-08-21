@@ -2,3 +2,13 @@
   height: calc(100dvh - 8rem);
   overflow-y: auto;
 }
+
+.filter-section:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.filter-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}

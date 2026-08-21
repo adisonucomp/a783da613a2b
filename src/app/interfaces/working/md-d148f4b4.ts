@@ -1,1 +1,6 @@
-export interface MdD148f4b4 {}
+export interface MdD148f4b4 {
+  idRegister?: number;
+  deviceId: number;
+  fdData: string;
+  imageExtId: number;
+}

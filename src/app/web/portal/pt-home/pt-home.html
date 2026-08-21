@@ -3,10 +3,35 @@
     <div class="col-3">
       <div class="card sidebar-card">
         <div class="card-header">Filtrar Por</div>
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="card-body p-0">
+          @if (loadingFilters()) {
+            <p class="m-3 text-body-secondary">Cargando filtros...</p>
+          }
+
+          @for (filter of filters(); track filter.key) {
+            <section class="filter-section p-3">
+              <h5 class="filter-title">{{ filter.title }}</h5>
+
+              @if (!loadingFilters() && filter.options.length === 0) {
+                <p class="mb-0 text-body-secondary small">No hay opciones disponibles.</p>
+              }
+
+              @for (option of filter.options; track option.id) {
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [id]="filter.key + '-' + option.id"
+                    [checked]="option.selected"
+                    (change)="toggleOption(filter.key, option.id, $any($event.target).checked)"
+                  />
+                  <label class="form-check-label" [for]="filter.key + '-' + option.id">
+                    {{ option.label }}
+                  </label>
+                </div>
+              }
+            </section>
+          }
         </div>
       </div>
     </div>
