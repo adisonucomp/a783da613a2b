@@ -69,7 +69,7 @@
           <div class="modal-body row g-3">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
-                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields()">
+                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth">
                   <label class="form-label" [for]="'field-' + field.key">{{ field.label }}</label>
                   @if (field.relation) {
                     <div class="position-relative">
@@ -98,10 +98,39 @@
                     </div>
                   } @else if (field.type === 'textarea') {
                     <textarea class="form-control" [id]="'field-' + field.key" rows="3" [formControlName]="field.key"></textarea>
+                  } @else if (field.type === 'image') {
+                    <input
+                      class="visually-hidden"
+                      [id]="'field-' + field.key"
+                      type="file"
+                      [accept]="imageAccept()"
+                      (change)="onImageSelected(field, $event)"
+                    />
+                    <label
+                      class="image-drop-zone d-flex flex-column align-items-center justify-content-center text-center p-4"
+                      [for]="'field-' + field.key"
+                      (dragover)="onImageDragOver($event)"
+                      (drop)="onImageDrop(field, $event)"
+                    >
+                      <i class="bi bi-cloud-arrow-up fs-3 mb-2"></i>
+                      <span>Seleccione una imagen o arrástrela y suéltela aquí.</span>
+                      <small class="text-body-secondary mt-1">Extensiones permitidas ({{ allowedImageExtensionsLabel() }})</small>
+                    </label>
+                    @if (imageFileName(field)) {
+                      <small class="d-block text-body-secondary mt-2">Archivo: {{ imageFileName(field) }}</small>
+                    }
                   } @else {
                     <input class="form-control" [id]="'field-' + field.key" [type]="field.type ?? 'text'" [formControlName]="field.key" />
                   }
                 </div>
+                @if (field.type === 'image' && imagePreview(field)) {
+                  <div class="col-12 image-preview-field">
+                    <label class="form-label">Vista previa</label>
+                    <div class="border rounded p-2 text-center">
+                      <img class="img-fluid image-preview" [src]="imagePreview(field)" alt="Vista previa de la imagen seleccionada" />
+                    </div>
+                  </div>
+                }
               }
             }
           </div>

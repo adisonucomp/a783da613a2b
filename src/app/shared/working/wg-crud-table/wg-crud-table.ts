@@ -26,11 +26,12 @@ export type WgRelation =
 
 export interface WgCrudField {
   createOnly?: boolean;
+  fullWidth?: boolean;
   label: string;
   key: string;
   relation?: WgRelation;
   required?: boolean;
-  type?: 'date' | 'email' | 'number' | 'password' | 'text' | 'textarea' | 'time';
+  type?: 'date' | 'email' | 'image' | 'number' | 'password' | 'text' | 'textarea' | 'time';
 }
 
 interface WgCrudService {
@@ -81,7 +82,10 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   private selectedId?: number;
 
   readonly editing = signal(false);
+  readonly allowedImageExtensions = signal<string[]>([]);
   readonly form = this.formBuilder.group({});
+  readonly imageNames = signal<Record<string, string>>({});
+  readonly imagePreviews = signal<Record<string, string>>({});
   readonly passwordForm = this.formBuilder.nonNullable.group({
     confirmPassword: ['', Validators.required],
     password: ['', Validators.required],
@@ -108,6 +112,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     this.editing.set(false);
     this.selectedId = undefined;
     this.buildForm();
+    this.loadImageExtensions();
     this.loadRelationOptions();
     this.showFormModal.set(true);
   }
@@ -180,6 +185,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     this.editing.set(true);
     this.selectedId = record.idRegister;
     this.buildForm(record);
+    this.loadImageExtensions();
     this.loadRelationOptions();
     this.showFormModal.set(true);
   }
@@ -340,6 +346,44 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     return this.fields.filter((field) => this.isFieldVisible(field)).length > 1;
   }
 
+  imageAccept(): string {
+    return this.allowedImageExtensions().map((extension) => `.${extension}`).join(',');
+  }
+
+  allowedImageExtensionsLabel(): string {
+    const extensions = this.allowedImageExtensions();
+    return extensions.length ? extensions.join(' | ') : 'Sin extensiones registradas';
+  }
+
+  imagePreview(field: WgCrudField): string | undefined {
+    return this.imagePreviews()[field.key];
+  }
+
+  imageFileName(field: WgCrudField): string | undefined {
+    return this.imageNames()[field.key];
+  }
+
+  onImageSelected(field: WgCrudField, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.loadImageFile(field, file);
+    }
+    input.value = '';
+  }
+
+  onImageDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onImageDrop(field: WgCrudField, event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+      this.loadImageFile(field, file);
+    }
+  }
+
   private get crudService(): WgCrudService {
     return this.service as WgCrudService;
   }
@@ -367,6 +411,18 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
           .map((field) => [field.key, String(record[field.key] ?? '')]),
       ),
     );
+
+    const previews: Record<string, string> = {};
+    const names: Record<string, string> = {};
+    for (const field of this.fields.filter((item) => item.type === 'image' && this.isFieldVisible(item))) {
+      const image = record[field.key];
+      if (typeof image === 'string' && image) {
+        previews[field.key] = image;
+        names[field.key] = 'Imagen actual';
+      }
+    }
+    this.imagePreviews.set(previews);
+    this.imageNames.set(names);
   }
 
   private getPayload(): Record<string, unknown> {
@@ -402,6 +458,45 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
         },
       });
     }
+  }
+
+  private loadImageExtensions(): void {
+    if (!this.fields.some((field) => field.type === 'image' && this.isFieldVisible(field))) {
+      return;
+    }
+
+    this.lookupServices['image-ext'].getAll().subscribe({
+      next: (items) => {
+        const extensions = items
+          .map((item) => String((item as WgRecord)['fdValue'] ?? '').trim().replace(/^\./, '').toLowerCase())
+          .filter((extension) => extension.length > 0);
+        this.allowedImageExtensions.set([...new Set(extensions)]);
+      },
+      error: () => this.allowedImageExtensions.set([]),
+    });
+  }
+
+  private loadImageFile(field: WgCrudField, file: File): void {
+    const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+    const allowedExtensions = this.allowedImageExtensions();
+    if (!file.type.startsWith('image/') || !allowedExtensions.includes(extension)) {
+      this.showMessage('warning', `Seleccione una imagen permitida (${this.allowedImageExtensionsLabel()}).`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = typeof reader.result === 'string' ? reader.result : '';
+      if (!image) {
+        return;
+      }
+
+      this.form.get(field.key)?.setValue(image);
+      this.form.get(field.key)?.markAsDirty();
+      this.imagePreviews.update((previews) => ({ ...previews, [field.key]: image }));
+      this.imageNames.update((names) => ({ ...names, [field.key]: file.name }));
+    };
+    reader.readAsDataURL(file);
   }
 
   private toRelationOptions(relation: WgRelation, items: unknown[]): RelationOption[] {

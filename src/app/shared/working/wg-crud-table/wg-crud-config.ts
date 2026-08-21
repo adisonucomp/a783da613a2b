@@ -46,18 +46,18 @@ export const deviceDataConfig: WgCrudConfig = {
   title: 'Dispositivos',
   fields: [
     { key: 'fdName', label: 'Nombre' },
-    { key: 'fdDetail', label: 'Detalle', type: 'textarea' },
     { key: 'fdPrice', label: 'Precio', type: 'number' },
     { key: 'fdStock', label: 'Stock', type: 'number' },
     { key: 'fdRam', label: 'Memoria RAM' },
     { key: 'fdStorage', label: 'Almacenamiento' },
     { key: 'fdScreenSize', label: 'Tamaño de Pantalla' },
     { key: 'fdRelease', label: 'Fecha de Lanzamiento', type: 'date' },
-    { key: 'fdImage', label: 'Imagen' },
     { key: 'brandDeviceId', label: 'Marca de Dispositivo', relation: 'brand-device' },
     { key: 'graphicCardId', label: 'Tarjeta Gráfica', relation: 'graphic-card' },
     { key: 'operatingSystemId', label: 'Sistema Operativo', relation: 'operating-system' },
     { key: 'typeProcessorId', label: 'Tipo de Procesador', relation: 'type-processor' },
+    { key: 'fdDetail', label: 'Detalle', type: 'textarea', fullWidth: true },
+    { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };
 
