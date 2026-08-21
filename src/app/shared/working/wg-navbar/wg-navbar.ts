@@ -24,7 +24,7 @@ export class WgNavbar implements OnInit {
   async logout(): Promise<void> {
     const result = await Swal.fire({
       cancelButtonText: 'Cancelar',
-      confirmButtonText: 'Sí, cerrar sesión',
+      confirmButtonText: 'Continuar',
       confirmButtonColor: '#0d6efd',
       icon: 'warning',
       showCancelButton: true,

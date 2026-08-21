@@ -30,10 +30,10 @@
       <div class="d-flex gap-2">
         @if (authSession.isAuthenticated()) {
           @if (authSession.getUserName(); as userName) {
-            <span class="navbar-text text-white align-self-center">{{ userName }}</span>
+            <span class="navbar-text text-white align-self-center border border-light rounded px-2 py-1">{{ userName }}</span>
           }
           @if (sessionTimer.remainingTime(); as remainingTime) {
-            <span class="navbar-text text-white align-self-center"><i class="bi bi-clock me-1"></i>{{ remainingTime }}</span>
+            <span class="navbar-text text-white align-self-center border border-light rounded px-2 py-1"><i class="bi bi-clock me-1"></i>{{ remainingTime }}</span>
           }
           <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
         } @else {
