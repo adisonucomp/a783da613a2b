@@ -245,7 +245,7 @@ export class SessionTimer {
       if (acknowledgement.type === 'expired') {
         this.stop();
         this.authSession.clear();
-        void this.router.navigate(['/login']);
+        this.navigateToLoginIfWorkingRoute();
       }
     } catch {
       // Ignora valores inválidos provenientes del almacenamiento compartido.
@@ -274,7 +274,7 @@ export class SessionTimer {
     if (event.type === 'logout') {
       this.stop();
       this.authSession.clear();
-      void this.router.navigate(['/login']);
+      this.navigateToLoginIfWorkingRoute();
       return;
     }
 
@@ -340,6 +340,12 @@ export class SessionTimer {
   private closeAlert(): void {
     if (this.canShowAlerts()) {
       Swal.close();
+    }
+  }
+
+  private navigateToLoginIfWorkingRoute(): void {
+    if (this.router.url.startsWith('/working')) {
+      void this.router.navigate(['/login']);
     }
   }
 }

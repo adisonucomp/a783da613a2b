@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 
 interface JwtPayload {
@@ -23,6 +23,8 @@ export class AuthSession {
   private readonly expiryKey = 'jwtExpiresAt';
   private readonly tokenKey = 'jwtToken';
 
+  readonly stateVersion = signal(0);
+
   saveToken(token: string, expiresAt?: string): void {
     const storage = this.storage();
     storage?.setItem(this.tokenKey, token);
@@ -33,6 +35,7 @@ export class AuthSession {
     } else {
       storage?.removeItem(this.expiryKey);
     }
+    this.stateVersion.update((version) => version + 1);
   }
 
   getToken(): string | null {
@@ -53,6 +56,7 @@ export class AuthSession {
   }
 
   isAuthenticated(): boolean {
+    this.stateVersion();
     const token = this.getToken();
     if (!token || this.isExpired(token)) {
       this.clear();
@@ -77,6 +81,7 @@ export class AuthSession {
     storage?.removeItem(this.tokenKey);
     storage?.removeItem(this.expiryKey);
     this.setSessionMarker(false);
+    this.stateVersion.update((version) => version + 1);
   }
 
   private storage(): Storage | null {
