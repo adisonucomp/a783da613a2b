@@ -1,5 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { MdB8043c54 } from '../../../interfaces/working/md-b8043c54';
@@ -28,7 +28,8 @@ interface ProductDetail extends MdB8043c54 {
   styleUrl: './pt-product.css',
   templateUrl: './pt-product.html',
 })
-export class PtProduct implements OnInit {
+export class PtProduct implements OnInit, OnDestroy {
+  private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly deviceService = inject(SgB8043c54);
@@ -69,11 +70,17 @@ export class PtProduct implements OnInit {
   openImageModal(): void {
     if (this.mainImage()) {
       this.showImageModal.set(true);
+      this.document.body.classList.add('image-viewer-open');
     }
   }
 
   closeImageModal(): void {
     this.showImageModal.set(false);
+    this.document.body.classList.remove('image-viewer-open');
+  }
+
+  ngOnDestroy(): void {
+    this.document.body.classList.remove('image-viewer-open');
   }
 
   setQuantity(value: string, stock: number): void {

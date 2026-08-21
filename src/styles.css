@@ -26,6 +26,10 @@
   background-color: var(--bs-secondary);
 }
 
+body.image-viewer-open {
+  overflow: hidden;
+}
+
 .working-content main > router-outlet + * {
   display: flex;
   flex: 1;
