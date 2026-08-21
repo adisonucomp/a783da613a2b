@@ -10,11 +10,7 @@
 
           @for (filter of filters(); track filter.key) {
             <section class="filter-section p-3">
-              <h5 class="filter-title">{{ filter.title }}</h5>
-
-              @if (!loadingFilters() && filter.options.length === 0) {
-                <p class="mb-0 text-body-secondary small">No hay opciones disponibles.</p>
-              }
+              <h5 class="filter-title" [class.mb-0]="filter.options.length === 0">{{ filter.title }}</h5>
 
               @for (option of filter.options; track option.id) {
                 <div class="form-check mb-2">
