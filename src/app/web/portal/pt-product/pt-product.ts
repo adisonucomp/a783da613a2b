@@ -42,6 +42,7 @@ export class PtProduct implements OnInit {
   readonly device = signal<ProductDetail | null>(null);
   readonly images = signal<ProductImage[]>([]);
   readonly loading = signal(true);
+  readonly quantity = signal(1);
   readonly showImageModal = signal(false);
   readonly mainImage = computed(() => this.activeImage() || this.images()[0]?.source || '');
 
@@ -73,6 +74,12 @@ export class PtProduct implements OnInit {
 
   closeImageModal(): void {
     this.showImageModal.set(false);
+  }
+
+  setQuantity(value: string, stock: number): void {
+    const parsedValue = Number(value);
+    const maximum = Math.max(1, stock);
+    this.quantity.set(Number.isFinite(parsedValue) ? Math.min(maximum, Math.max(1, Math.trunc(parsedValue))) : 1);
   }
 
   formatPrice(price: number): string {
@@ -125,6 +132,7 @@ export class PtProduct implements OnInit {
       this.device.set(detail);
       this.images.set(gallery);
       this.activeImage.set(gallery[0]?.source ?? '');
+      this.quantity.set(1);
       this.loading.set(false);
     });
   }

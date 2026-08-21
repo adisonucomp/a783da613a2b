@@ -37,10 +37,24 @@
         <div class="card purchase-card h-100">
           <div class="card-header">Compra</div>
           <div class="card-body d-flex flex-column">
-            <p class="text-body-secondary mb-1">Precio</p>
-            <p class="display-6 text-primary fw-semibold">{{ formatPrice(product.fdPrice) }}</p>
-            <p class="mb-4">Stock disponible: <strong>{{ product.fdStock }}</strong></p>
-            <button class="btn btn-primary mt-auto" type="button">Comprar</button>
+            <div class="alert alert-info display-6 fw-semibold text-center mb-4">{{ formatPrice(product.fdPrice) }}</div>
+            <div class="alert alert-info text-center mb-4">Stock disponible: <strong>{{ product.fdStock }}</strong></div>
+            <div class="purchase-actions mt-auto d-flex gap-3 align-items-end">
+              <div class="quantity-control">
+                <label class="form-label small mb-1" for="quantity">Cantidad</label>
+                <input
+                  id="quantity"
+                  class="form-control"
+                  type="number"
+                  min="1"
+                  [max]="product.fdStock"
+                  [value]="quantity()"
+                  [disabled]="product.fdStock < 1"
+                  (input)="setQuantity($any($event.target).value, product.fdStock)"
+                />
+              </div>
+              <button class="btn btn-primary flex-grow-1" type="button" [disabled]="product.fdStock < 1">Agregar al carrito</button>
+            </div>
           </div>
         </div>
       </div>
@@ -83,7 +97,25 @@
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white"><h2 class="modal-title h5 mb-0">Imagen del producto</h2><button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeImageModal()"></button></div>
-        <div class="modal-body text-center"><img class="modal-product-image img-fluid" [src]="mainImage()" alt="Imagen ampliada del producto" /></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12 text-center">
+              <img class="modal-product-image img-fluid" [src]="mainImage()" alt="Imagen ampliada del producto" />
+            </div>
+            <div class="col-12">
+              <div class="card modal-gallery-card">
+                <div class="card-header py-2">Más imágenes</div>
+                <div class="card-body modal-gallery-list p-2">
+                  @for (image of images(); track image.id) {
+                    <button class="modal-thumbnail" type="button" [class.active]="mainImage() === image.source" (click)="selectImage(image)">
+                      <img [src]="image.source" alt="Seleccionar imagen del producto" />
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

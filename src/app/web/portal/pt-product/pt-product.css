@@ -7,9 +7,15 @@
 .thumbnail-card img { height: 4.7rem; max-width: 100%; object-fit: contain; }
 .main-image-button { background: transparent; border: 0; cursor: zoom-in; height: 100%; padding: 0; width: 100%; }
 .main-image { height: 29rem; max-width: 100%; object-fit: contain; width: 100%; }
+.quantity-control { width: 6.25rem; }
+.purchase-actions .btn { min-height: 2.4rem; }
 .detail-table th { width: 42%; }
 .detail-table td, .detail-table th { padding: .65rem 1rem; vertical-align: middle; }
 .detail-text { overflow-wrap: anywhere; white-space: pre-wrap; }
 .modal { z-index: 1060; }
-.modal-product-image { max-height: calc(100vh - 10rem); object-fit: contain; }
+.modal-product-image { max-height: calc(100vh - 20rem); object-fit: contain; }
+.modal-gallery-list { display: flex; gap: .75rem; max-width: 100%; overflow-x: auto; }
+.modal-thumbnail { align-items: center; background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); display: flex; flex: 0 0 5.5rem; height: 5.5rem; justify-content: center; padding: .25rem; }
+.modal-thumbnail.active { border-color: var(--bs-primary); box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .25); }
+.modal-thumbnail img { height: 4.75rem; max-width: 100%; object-fit: contain; }
 @media (max-width: 991.98px) { .gallery-card, .main-image-card, .purchase-card { min-height: auto; } .gallery-scroll { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; } .thumbnail-card { min-width: 5.4rem; } .main-image { height: 22rem; } }
