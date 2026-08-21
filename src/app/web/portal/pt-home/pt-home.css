@@ -5,7 +5,7 @@
 }
 
 .sidebar-card {
-  height: calc(100dvh - 8rem);
+  height: calc(100dvh - 11rem);
   overflow-y: auto;
 }
 
