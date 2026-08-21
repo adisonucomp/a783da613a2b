@@ -51,7 +51,7 @@ export abstract class CrudDtoService<T extends DtoRecord> {
       .pipe(map(() => undefined));
   }
 
-  private jwtOptions(): { headers: HttpHeaders } {
+  protected jwtOptions(): { headers: HttpHeaders } {
     const token = this.getJwtToken();
     return {
       headers: token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders(),

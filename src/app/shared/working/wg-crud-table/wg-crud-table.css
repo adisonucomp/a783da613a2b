@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.no-sort {
+  width: 1%;
+}
+
+.modal {
+  z-index: 1060;
+}

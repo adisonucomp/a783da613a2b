@@ -1,0 +1,117 @@
+<section class="container-fluid py-2">
+  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+    <h1 class="h3 mb-0">{{ title }}</h1>
+    <button class="btn btn-primary" type="button" (click)="openCreate()">
+      <i class="bi bi-plus-lg me-2"></i>Nuevo
+    </button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table #dataTable class="table table-striped table-hover align-middle w-100">
+          <thead>
+            <tr>
+              <th>#</th>
+              @for (field of fields; track field.key) {
+                @if (!field.createOnly) {
+                  <th>{{ field.label }}</th>
+                }
+              }
+              <th class="text-end no-sort">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of records(); track record.idRegister) {
+              <tr>
+                <td>{{ record.idRegister }}</td>
+                @for (field of fields; track field.key) {
+                  @if (!field.createOnly) {
+                    <td>{{ value(record, field) }}</td>
+                  }
+                }
+                <td class="text-end text-nowrap">
+                  <button class="btn btn-sm btn-outline-primary me-2" type="button" (click)="openEdit(record)">
+                    <i class="bi bi-pencil me-1"></i>Editar
+                  </button>
+                  @if (showPasswordAction) {
+                    <button class="btn btn-sm btn-outline-secondary me-2" type="button" (click)="openPasswordModal(record)">
+                      <i class="bi bi-key me-1"></i>Contraseña
+                    </button>
+                  }
+                  <button class="btn btn-sm btn-outline-danger" type="button" (click)="remove(record)">
+                    <i class="bi bi-trash me-1"></i>Quitar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+@if (showFormModal()) {
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title h5 mb-0">{{ editing() ? 'Editar' : 'Nuevo' }} {{ title }}</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeFormModal()"></button>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="modal-body row g-3">
+            @for (field of fields; track field.key) {
+              @if (isFieldVisible(field)) {
+                <div class="col-12 col-md-6">
+                  <label class="form-label" [for]="'field-' + field.key">{{ field.label }}</label>
+                  @if (field.type === 'textarea') {
+                    <textarea class="form-control" [id]="'field-' + field.key" rows="3" [formControlName]="field.key"></textarea>
+                  } @else {
+                    <input class="form-control" [id]="'field-' + field.key" [type]="field.type ?? 'text'" [formControlName]="field.key" />
+                  }
+                </div>
+              }
+            }
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-secondary" type="button" (click)="closeFormModal()">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+
+@if (showPasswordModal()) {
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title h5 mb-0">Cambiar contraseña</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closePasswordModal()"></button>
+        </div>
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label" for="password">Contraseña</label>
+              <input id="password" class="form-control" type="password" formControlName="password" autocomplete="new-password" />
+            </div>
+            <div>
+              <label class="form-label" for="confirmPassword">Confirmar contraseña</label>
+              <input id="confirmPassword" class="form-control" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline-secondary" type="button" (click)="closePasswordModal()">Cancelar</button>
+            <button class="btn btn-primary" type="submit">Actualizar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
