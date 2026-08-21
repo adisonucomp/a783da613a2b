@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.register-page {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  padding-block: 1.5rem;
+}
+
+.register-page > .row {
+  width: 100%;
+}

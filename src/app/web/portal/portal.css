@@ -1,3 +1,21 @@
 :host {
   display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+:host > app-pt-navbar {
+  display: block;
+  flex: 0 0 56px;
+}
+
+.portal-page {
+  display: flex;
+  flex: 1;
+}
+
+:host > app-pt-footer {
+  display: block;
+  flex: 0 0 auto;
 }
