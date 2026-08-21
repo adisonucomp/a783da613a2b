@@ -26,6 +26,8 @@ interface FilterSection {
   templateUrl: './pt-home.html',
 })
 export class PtHome implements OnInit {
+  private readonly filtersCacheKey = 'portalHomeFilters';
+  private readonly filtersCacheLifetime = 5 * 60_000;
   private readonly platformId = inject(PLATFORM_ID);
   private readonly brandDeviceService = inject(SgB4c4c7b1);
   private readonly brandProcessorService = inject(SgC98391c6);
@@ -48,6 +50,11 @@ export class PtHome implements OnInit {
       return;
     }
 
+    this.restoreFiltersFromCache();
+    this.loadFilters();
+  }
+
+  private loadFilters(): void {
     forkJoin({
       brandDevice: this.brandDeviceService.getAll().pipe(catchError(() => of([]))),
       brandProcessor: this.brandProcessorService.getAll().pipe(catchError(() => of([]))),
@@ -61,6 +68,7 @@ export class PtHome implements OnInit {
       this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
       this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
       this.loadingFilters.set(false);
+      this.saveFiltersToCache();
     });
   }
 
@@ -91,5 +99,39 @@ export class PtHome implements OnInit {
       label: item.name ?? item.fdName ?? 'Sin nombre',
       selected: false,
     }));
+  }
+
+  private restoreFiltersFromCache(): void {
+    try {
+      const cachedValue = sessionStorage.getItem(this.filtersCacheKey);
+      if (!cachedValue) {
+        return;
+      }
+
+      const cached = JSON.parse(cachedValue) as { createdAt?: number; filters?: FilterSection[] };
+      if (!cached.createdAt || Date.now() - cached.createdAt > this.filtersCacheLifetime || !cached.filters) {
+        sessionStorage.removeItem(this.filtersCacheKey);
+        return;
+      }
+
+      this.filters.set(cached.filters.map((section) => ({
+        ...section,
+        options: section.options.map((option) => ({ ...option, selected: false })),
+      })));
+      this.loadingFilters.set(false);
+    } catch {
+      sessionStorage.removeItem(this.filtersCacheKey);
+    }
+  }
+
+  private saveFiltersToCache(): void {
+    try {
+      sessionStorage.setItem(this.filtersCacheKey, JSON.stringify({
+        createdAt: Date.now(),
+        filters: this.filters(),
+      }));
+    } catch {
+      // La aplicación continúa sin caché si el navegador bloquea el almacenamiento.
+    }
   }
 }

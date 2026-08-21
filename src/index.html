@@ -6,6 +6,34 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    (function () {
+      try {
+        var storedTheme = localStorage.getItem('themeMode');
+        var theme = storedTheme === 'dark' || storedTheme === 'light'
+          ? storedTheme
+          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        document.documentElement.style.colorScheme = theme;
+
+        var token = sessionStorage.getItem('jwtToken') || localStorage.getItem('jwtToken');
+        if (token) {
+          var encodedPayload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+          encodedPayload += '='.repeat((4 - encodedPayload.length % 4) % 4);
+          var payload = JSON.parse(atob(encodedPayload));
+          if (payload.exp && payload.exp * 1000 > Date.now()) {
+            document.documentElement.setAttribute('data-session', 'authenticated');
+          }
+        }
+      } catch (_) {
+        // El arranque conserva el tema claro y la vista de invitado si el almacenamiento no está disponible.
+      }
+    })();
+  </script>
+  <style>
+    html[data-bs-theme='dark'], html[data-bs-theme='dark'] body { background-color: #212529; }
+    html[data-session='authenticated'] .guest-actions { display: none !important; }
+  </style>
 </head>
 <body>
   <app-root></app-root>

@@ -1,4 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 
@@ -18,6 +18,7 @@ interface JwtPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthSession {
+  private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly expiryKey = 'jwtExpiresAt';
   private readonly tokenKey = 'jwtToken';
@@ -25,6 +26,7 @@ export class AuthSession {
   saveToken(token: string, expiresAt?: string): void {
     const storage = this.storage();
     storage?.setItem(this.tokenKey, token);
+    this.setSessionMarker(true);
 
     if (expiresAt) {
       storage?.setItem(this.expiryKey, expiresAt);
@@ -74,6 +76,7 @@ export class AuthSession {
     const storage = this.storage();
     storage?.removeItem(this.tokenKey);
     storage?.removeItem(this.expiryKey);
+    this.setSessionMarker(false);
   }
 
   private storage(): Storage | null {
@@ -82,6 +85,18 @@ export class AuthSession {
     }
 
     return environment.sessionStorage ? sessionStorage : localStorage;
+  }
+
+  private setSessionMarker(authenticated: boolean): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    if (authenticated) {
+      this.document.documentElement.setAttribute('data-session', 'authenticated');
+    } else {
+      this.document.documentElement.removeAttribute('data-session');
+    }
   }
 
   private isExpired(token: string): boolean {

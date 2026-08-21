@@ -42,8 +42,10 @@
           <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
         } @else {
           <app-theme-toggle></app-theme-toggle>
-          <a class="btn btn-outline-light" routerLink="/login">Ingreso</a>
-          <a class="btn btn-light" routerLink="/portal/register">Registro</a>
+          <div class="d-flex gap-2 guest-actions">
+            <a class="btn btn-outline-light" routerLink="/login">Ingreso</a>
+            <a class="btn btn-light" routerLink="/portal/register">Registro</a>
+          </div>
         }
       </div>
     </div>
