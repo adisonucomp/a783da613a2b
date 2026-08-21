@@ -9,7 +9,7 @@ export interface WgCrudConfig {
 export const graphicCardConfig: WgCrudConfig = {
   title: 'Tarjetas Gráficas',
   fields: [
-    { key: 'fdName', label: 'Nombre' },
+    { key: 'fdName', label: 'Nombre', fullWidth: true },
     { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };
@@ -43,7 +43,7 @@ export const typeProcessorConfig: WgCrudConfig = {
 export const brandDeviceConfig: WgCrudConfig = {
   title: 'Marcas de Dispositivos',
   fields: [
-    { key: 'name', label: 'Nombre' },
+    { key: 'name', label: 'Nombre', fullWidth: true },
     { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };
@@ -88,7 +88,7 @@ export const roleDataConfig: WgCrudConfig = {
 export const brandProcessorConfig: WgCrudConfig = {
   title: 'Marcas de Procesadores',
   fields: [
-    { key: 'fdName', label: 'Nombre' },
+    { key: 'fdName', label: 'Nombre', fullWidth: true },
     { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };
@@ -96,7 +96,7 @@ export const brandProcessorConfig: WgCrudConfig = {
 export const operatingSystemConfig: WgCrudConfig = {
   title: 'Sistemas Operativos',
   fields: [
-    { key: 'fdName', label: 'Nombre' },
+    { key: 'fdName', label: 'Nombre', fullWidth: true },
     { key: 'fdImage', label: 'Imagen', type: 'image', fullWidth: true },
   ],
 };
