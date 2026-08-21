@@ -1,1 +1,91 @@
-<p>pt-product works!</p>
+<section class="container product-page py-4">
+  @if (loading()) {
+    <p class="text-body-secondary">Cargando producto...</p>
+  } @else if (device(); as product) {
+    <a class="back-link d-inline-block mb-3" routerLink="/portal/home"><i class="bi bi-chevron-left"></i> Volver a productos</a>
+    <h1 class="h3 mb-4">{{ product.fdName }}</h1>
+
+    <div class="row g-4 align-items-stretch">
+      <div class="col-12 col-lg-3">
+        <div class="card gallery-card h-100">
+          <div class="card-header">Imágenes</div>
+          <div class="card-body gallery-scroll p-2">
+            @for (image of images(); track image.id) {
+              <button class="thumbnail-card" type="button" [class.active]="mainImage() === image.source" (click)="selectImage(image)">
+                <img [src]="image.source" alt="Imagen de {{ product.fdName }}" />
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <div class="card main-image-card h-100">
+          <div class="card-body d-flex align-items-center justify-content-center p-3">
+            @if (mainImage()) {
+              <button class="main-image-button" type="button" (click)="openImageModal()" aria-label="Ampliar imagen">
+                <img class="main-image" [src]="mainImage()" [alt]="product.fdName" />
+              </button>
+            } @else {
+              <span class="text-body-secondary">No hay imagen disponible.</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-3">
+        <div class="card purchase-card h-100">
+          <div class="card-header">Compra</div>
+          <div class="card-body d-flex flex-column">
+            <p class="text-body-secondary mb-1">Precio</p>
+            <p class="display-6 text-primary fw-semibold">{{ formatPrice(product.fdPrice) }}</p>
+            <p class="mb-4">Stock disponible: <strong>{{ product.fdStock }}</strong></p>
+            <button class="btn btn-primary mt-auto" type="button">Comprar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Características</div><div class="card-body p-0">
+          <table class="table table-sm mb-0 detail-table"><tbody>
+            <tr><th>Código</th><td>{{ product.fdCode }}</td></tr>
+            <tr><th>Nombre</th><td>{{ product.fdName }}</td></tr>
+            <tr><th>Memoria RAM</th><td>{{ product.fdRam }}</td></tr>
+            <tr><th>Almacenamiento</th><td>{{ product.fdStorage }}</td></tr>
+            <tr><th>Tamaño de la pantalla</th><td>{{ product.fdScreenSize }}</td></tr>
+          </tbody></table>
+        </div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Especificaciones</div><div class="card-body p-0">
+          <table class="table table-sm mb-0 detail-table"><tbody>
+            <tr><th>Fecha de lanzamiento</th><td>{{ formatDate(product.fdRelease) }}</td></tr>
+            <tr><th>Marca del dispositivo</th><td>{{ product.brandName }}</td></tr>
+            <tr><th>Tarjeta gráfica</th><td>{{ product.graphicCardName }}</td></tr>
+            <tr><th>Sistema operativo</th><td>{{ product.operatingSystemName }}</td></tr>
+            <tr><th>Tipo de procesador</th><td>{{ product.processorName }}</td></tr>
+          </tbody></table>
+        </div></div>
+      </div>
+      <div class="col-12">
+        <div class="card"><div class="card-header">Detalle</div><div class="card-body detail-text">{{ product.fdDetail || 'Sin detalle disponible.' }}</div></div>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-warning mb-0">El producto solicitado no está disponible.</div>
+  }
+</section>
+
+@if (showImageModal()) {
+  <div class="modal d-block image-modal" tabindex="-1" role="dialog" aria-modal="true" (click)="closeImageModal()">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h2 class="modal-title h5 mb-0">Imagen del producto</h2><button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeImageModal()"></button></div>
+        <div class="modal-body text-center"><img class="modal-product-image img-fluid" [src]="mainImage()" alt="Imagen ampliada del producto" /></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}

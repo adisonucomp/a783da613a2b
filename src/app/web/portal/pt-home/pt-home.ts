@@ -1,9 +1,15 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
+import { MdA6ac2e09 } from '../../../interfaces/working/md-a6ac2e09';
+import { MdB2c17bdf } from '../../../interfaces/working/md-b2c17bdf';
+import { MdB8043c54 } from '../../../interfaces/working/md-b8043c54';
+import { MdD0112a5a } from '../../../interfaces/working/md-d0112a5a';
 import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg-a6ac2e09';
 import { SgB2c17bdf } from '../../../services/backend/java/spring/sg-b2c17bdf/sg-b2c17bdf';
 import { SgB4c4c7b1 } from '../../../services/backend/java/spring/sg-b4c4c7b1/sg-b4c4c7b1';
+import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg-b8043c54';
 import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
 
@@ -19,8 +25,23 @@ interface FilterSection {
   options: FilterOption[];
 }
 
+interface ProductCard {
+  brandDeviceId: number;
+  graphicCard: string;
+  graphicCardId: number;
+  id: number;
+  image: string;
+  name: string;
+  operatingSystem: string;
+  operatingSystemId: number;
+  price: number;
+  processor: string;
+  processorBrandId: number;
+  typeProcessorId: number;
+}
+
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-pt-home',
   styleUrl: './pt-home.css',
   templateUrl: './pt-home.html',
@@ -34,8 +55,13 @@ export class PtHome implements OnInit {
   private readonly typeProcessorService = inject(SgB2c17bdf);
   private readonly graphicCardService = inject(SgA6ac2e09);
   private readonly operatingSystemService = inject(SgD0112a5a);
+  private readonly deviceService = inject(SgB8043c54);
 
   readonly loadingFilters = signal(true);
+  readonly loadingProducts = signal(true);
+  readonly page = signal(1);
+  readonly pageSize = 25;
+  readonly products = signal<ProductCard[]>([]);
   readonly filters = signal<FilterSection[]>([
     { key: 'brand-device', title: 'Marcas de Dispositivos', options: [] },
     { key: 'brand-processor', title: 'Marcas de Procesadores', options: [] },
@@ -43,62 +69,131 @@ export class PtHome implements OnInit {
     { key: 'graphic-card', title: 'Tarjetas Graficas', options: [] },
     { key: 'operating-system', title: 'Sistemas Operativos', options: [] },
   ]);
+  readonly filteredProducts = computed(() => this.products().filter((product) => this.matchesFilters(product)));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredProducts().length / this.pageSize)));
+  readonly visibleProducts = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.filteredProducts().slice(start, start + this.pageSize);
+  });
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
       this.loadingFilters.set(false);
+      this.loadingProducts.set(false);
       return;
     }
 
     this.restoreFiltersFromCache();
-    this.loadFilters();
+    this.loadCatalog();
   }
 
-  private loadFilters(): void {
+  toggleOption(sectionKey: string, optionId: number, checked: boolean): void {
+    this.filters.update((sections) => sections.map((section) =>
+      section.key === sectionKey
+        ? { ...section, options: section.options.map((option) => option.id === optionId ? { ...option, selected: checked } : option) }
+        : section,
+    ));
+    this.page.set(1);
+  }
+
+  previousPage(): void {
+    this.page.update((page) => Math.max(1, page - 1));
+  }
+
+  nextPage(): void {
+    this.page.update((page) => Math.min(this.totalPages(), page + 1));
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
+  }
+
+  productImage(image: string): string {
+    if (image.startsWith('data:image/')) {
+      return image;
+    }
+
+    const mimeType = image.startsWith('iVBORw') ? 'image/png'
+      : image.startsWith('/9j/') ? 'image/jpeg'
+        : image.startsWith('R0lGOD') ? 'image/gif'
+          : image.startsWith('UklGR') ? 'image/webp'
+            : 'image/png';
+    return `data:${mimeType};base64,${image}`;
+  }
+
+  private loadCatalog(): void {
     forkJoin({
       brandDevice: this.brandDeviceService.getAll().pipe(catchError(() => of([]))),
       brandProcessor: this.brandProcessorService.getAll().pipe(catchError(() => of([]))),
       typeProcessor: this.typeProcessorService.getAll().pipe(catchError(() => of([]))),
       graphicCard: this.graphicCardService.getAll().pipe(catchError(() => of([]))),
       operatingSystem: this.operatingSystemService.getAll().pipe(catchError(() => of([]))),
-    }).subscribe(({ brandDevice, brandProcessor, typeProcessor, graphicCard, operatingSystem }) => {
+      devices: this.deviceService.getAll().pipe(catchError(() => of([]))),
+    }).subscribe(({ brandDevice, brandProcessor, typeProcessor, graphicCard, operatingSystem, devices }) => {
       this.setOptions('brand-device', this.toFilterOptions(brandDevice));
       this.setOptions('brand-processor', this.toFilterOptions(brandProcessor));
       this.setOptions('type-processor', this.toFilterOptions(typeProcessor));
       this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
       this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
+      this.products.set(this.toProducts(devices, typeProcessor, graphicCard, operatingSystem));
+      this.page.set(1);
       this.loadingFilters.set(false);
+      this.loadingProducts.set(false);
       this.saveFiltersToCache();
     });
   }
 
-  toggleOption(sectionKey: string, optionId: number, checked: boolean): void {
-    this.filters.update((sections) =>
-      sections.map((section) =>
-        section.key === sectionKey
-          ? {
-              ...section,
-              options: section.options.map((option) =>
-                option.id === optionId ? { ...option, selected: checked } : option,
-              ),
-            }
-          : section,
-      ),
+  private toProducts(
+    devices: MdB8043c54[],
+    processorTypes: MdB2c17bdf[],
+    graphicCards: MdA6ac2e09[],
+    operatingSystems: MdD0112a5a[],
+  ): ProductCard[] {
+    const namesById = (items: Array<{ idRegister?: number; fdName: string }>) => new Map(
+      items.map((item) => [item.idRegister, item.fdName]),
     );
+    const processors = namesById(processorTypes);
+    const processorTypesById = new Map(processorTypes.map((processor) => [processor.idRegister, processor]));
+    const graphics = namesById(graphicCards);
+    const systems = namesById(operatingSystems);
+
+    return devices
+      .filter((device) => typeof device.idRegister === 'number')
+      .map((device) => ({
+        id: device.idRegister!,
+        name: device.fdName,
+        image: device.fdImage,
+        brandDeviceId: device.brandDeviceId,
+        processor: processors.get(device.typeProcessorId) ?? 'No especificado',
+        processorBrandId: processorTypesById.get(device.typeProcessorId)?.brandProcessorId ?? 0,
+        typeProcessorId: device.typeProcessorId,
+        graphicCard: graphics.get(device.graphicCardId) ?? 'No especificada',
+        graphicCardId: device.graphicCardId,
+        operatingSystem: systems.get(device.operatingSystemId) ?? 'No especificado',
+        operatingSystemId: device.operatingSystemId,
+        price: Number(device.fdPrice) || 0,
+      }));
+  }
+
+  private matchesFilters(product: ProductCard): boolean {
+    const selectedOptions = (key: string) => this.filters().find((section) => section.key === key)?.options
+      .filter((option) => option.selected)
+      .map((option) => option.id) ?? [];
+    const matches = (selectedIds: number[], value: number) => selectedIds.length === 0 || selectedIds.includes(value);
+
+    return matches(selectedOptions('brand-device'), product.brandDeviceId)
+      && matches(selectedOptions('brand-processor'), product.processorBrandId)
+      && matches(selectedOptions('type-processor'), product.typeProcessorId)
+      && matches(selectedOptions('graphic-card'), product.graphicCardId)
+      && matches(selectedOptions('operating-system'), product.operatingSystemId);
   }
 
   private setOptions(sectionKey: string, options: FilterOption[]): void {
-    this.filters.update((sections) =>
-      sections.map((section) => (section.key === sectionKey ? { ...section, options } : section)),
-    );
+    this.filters.update((sections) => sections.map((section) => section.key === sectionKey ? { ...section, options } : section));
   }
 
   private toFilterOptions(items: Array<{ idRegister?: number; name?: string; fdName?: string }>): FilterOption[] {
-    return items.map((item) => ({
-      id: item.idRegister ?? 0,
-      label: item.name ?? item.fdName ?? 'Sin nombre',
-      selected: false,
-    }));
+    return items.map((item) => ({ id: item.idRegister ?? 0, label: item.name ?? item.fdName ?? 'Sin nombre', selected: false }));
   }
 
   private restoreFiltersFromCache(): void {
@@ -107,17 +202,12 @@ export class PtHome implements OnInit {
       if (!cachedValue) {
         return;
       }
-
       const cached = JSON.parse(cachedValue) as { createdAt?: number; filters?: FilterSection[] };
       if (!cached.createdAt || Date.now() - cached.createdAt > this.filtersCacheLifetime || !cached.filters) {
         sessionStorage.removeItem(this.filtersCacheKey);
         return;
       }
-
-      this.filters.set(cached.filters.map((section) => ({
-        ...section,
-        options: section.options.map((option) => ({ ...option, selected: false })),
-      })));
+      this.filters.set(cached.filters.map((section) => ({ ...section, options: section.options.map((option) => ({ ...option, selected: false })) })));
       this.loadingFilters.set(false);
     } catch {
       sessionStorage.removeItem(this.filtersCacheKey);
@@ -126,10 +216,7 @@ export class PtHome implements OnInit {
 
   private saveFiltersToCache(): void {
     try {
-      sessionStorage.setItem(this.filtersCacheKey, JSON.stringify({
-        createdAt: Date.now(),
-        filters: this.filters(),
-      }));
+      sessionStorage.setItem(this.filtersCacheKey, JSON.stringify({ createdAt: Date.now(), filters: this.filters() }));
     } catch {
       // La aplicación continúa sin caché si el navegador bloquea el almacenamiento.
     }
