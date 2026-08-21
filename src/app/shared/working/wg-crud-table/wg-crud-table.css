@@ -2,8 +2,8 @@
   display: block;
 }
 
-.no-sort {
-  width: 1%;
+.selectable-row {
+  cursor: pointer;
 }
 
 .modal {

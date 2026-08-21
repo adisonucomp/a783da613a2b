@@ -39,6 +39,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly platformId = inject(PLATFORM_ID);
   private dataTable?: { destroy: () => void };
+  private loadId = 0;
   private tableIsReady = false;
   private selectedId?: number;
 
@@ -49,8 +50,10 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     password: ['', Validators.required],
   });
   readonly records = signal<WgRecord[]>([]);
+  readonly selectedRecord = signal<WgRecord | null>(null);
   readonly showFormModal = signal(false);
   readonly showPasswordModal = signal(false);
+  readonly tableVisible = signal(false);
 
   ngAfterViewInit(): void {
     this.tableIsReady = true;
@@ -66,6 +69,31 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     this.selectedId = undefined;
     this.buildForm();
     this.showFormModal.set(true);
+  }
+
+  selectRecord(record: WgRecord): void {
+    this.selectedRecord.set(record);
+  }
+
+  openSelectedEdit(): void {
+    const record = this.selectedRecord();
+    if (record) {
+      this.openEdit(record);
+    }
+  }
+
+  removeSelected(): void {
+    const record = this.selectedRecord();
+    if (record) {
+      void this.remove(record);
+    }
+  }
+
+  openSelectedPasswordModal(): void {
+    const record = this.selectedRecord();
+    if (record) {
+      this.openPasswordModal(record);
+    }
   }
 
   openEdit(record: WgRecord): void {
@@ -102,19 +130,33 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
       return;
     }
 
+    const currentLoadId = ++this.loadId;
     this.destroyTable();
+    this.tableVisible.set(false);
+    this.selectedRecord.set(null);
     this.showProcessing('Cargando información...');
 
     this.crudService.getAll().subscribe({
       next: (records) => {
+        if (currentLoadId !== this.loadId) {
+          return;
+        }
+
         this.records.set(records as WgRecord[]);
+        this.tableVisible.set(true);
         this.closeAlert();
-        this.initializeDataTable();
+        void this.initializeDataTable(currentLoadId);
       },
       error: () => {
+        if (currentLoadId !== this.loadId) {
+          return;
+        }
+
         this.records.set([]);
+        this.tableVisible.set(true);
         this.closeAlert();
         this.showMessage('error', 'No fue posible cargar la información');
+        void this.initializeDataTable(currentLoadId);
       },
     });
   }
@@ -241,13 +283,21 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     return payload;
   }
 
-  private async initializeDataTable(): Promise<void> {
-    if (!this.tableIsReady || !this.dataTableElement || !this.canUseDataTable()) {
+  private async initializeDataTable(loadId: number): Promise<void> {
+    if (!this.tableIsReady || !this.canUseDataTable()) {
       return;
     }
 
     await new Promise((resolve) => setTimeout(resolve));
+    if (loadId !== this.loadId || !this.dataTableElement) {
+      return;
+    }
+
     const { default: DataTable } = await import('datatables.net-bs5');
+    if (loadId !== this.loadId || !this.dataTableElement) {
+      return;
+    }
+
     this.dataTable = new DataTable(this.dataTableElement.nativeElement, {
       language: {
         emptyTable: 'No hay registros disponibles',
