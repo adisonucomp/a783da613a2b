@@ -37,7 +37,7 @@ export class CeLogin {
       next: ({ data }) => {
         this.authSession.saveToken(data.token, data.expiresAt);
 
-        void this.router.navigate(['/working/dashboard']);
+        void this.router.navigate([this.authSession.isAdministrator() ? '/working/dashboard' : '/portal/home']);
       },
       error: () => {
         void Swal.fire({

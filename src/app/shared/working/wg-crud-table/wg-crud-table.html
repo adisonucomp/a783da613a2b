@@ -1,21 +1,25 @@
 <section class="container-fluid py-2">
-  <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-    <h1 class="h3 mb-0">{{ title }}</h1>
-    <div class="d-flex flex-wrap justify-content-end gap-2">
-      <button class="btn btn-outline-success" type="button" (click)="openCreate()">
-        <i class="bi bi-plus-lg me-1"></i>Nuevo
-      </button>
-      <button class="btn btn-outline-warning" type="button" [disabled]="!selectedRecord()" (click)="openSelectedEdit()">
-        <i class="bi bi-pencil me-1"></i>Editar
-      </button>
-      @if (showPasswordAction) {
-        <button class="btn btn-outline-secondary" type="button" [disabled]="!selectedRecord()" (click)="openSelectedPasswordModal()">
-          <i class="bi bi-key me-1"></i>Contraseña
-        </button>
-      }
-      <button class="btn btn-outline-danger" type="button" [disabled]="!selectedRecord()" (click)="removeSelected()">
-        <i class="bi bi-trash me-1"></i>Quitar
-      </button>
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        <h1 class="h3 mb-0">{{ title }}</h1>
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+          <button class="btn btn-outline-success" type="button" (click)="openCreate()">
+            <i class="bi bi-plus-lg me-1"></i>Nuevo
+          </button>
+          <button class="btn btn-outline-warning" type="button" [disabled]="!selectedRecord()" (click)="openSelectedEdit()">
+            <i class="bi bi-pencil me-1"></i>Editar
+          </button>
+          @if (showPasswordAction) {
+            <button class="btn btn-outline-secondary" type="button" [disabled]="!selectedRecord()" (click)="openSelectedPasswordModal()">
+              <i class="bi bi-key me-1"></i>Contraseña
+            </button>
+          }
+          <button class="btn btn-outline-danger" type="button" [disabled]="!selectedRecord()" (click)="removeSelected()">
+            <i class="bi bi-trash me-1"></i>Quitar
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

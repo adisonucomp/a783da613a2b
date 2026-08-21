@@ -28,8 +28,18 @@
         </li>
       </ul>
       <div class="d-flex gap-2">
-        <a class="btn btn-outline-light" routerLink="/login">Ingreso</a>
-        <a class="btn btn-light" routerLink="/portal/register">Registro</a>
+        @if (authSession.isAuthenticated()) {
+          @if (authSession.getUserName(); as userName) {
+            <span class="navbar-text text-white align-self-center">{{ userName }}</span>
+          }
+          @if (sessionTimer.remainingTime(); as remainingTime) {
+            <span class="navbar-text text-white align-self-center"><i class="bi bi-clock me-1"></i>{{ remainingTime }}</span>
+          }
+          <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
+        } @else {
+          <a class="btn btn-outline-light" routerLink="/login">Ingreso</a>
+          <a class="btn btn-light" routerLink="/portal/register">Registro</a>
+        }
       </div>
     </div>
   </div>

@@ -2,6 +2,20 @@ import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 
+interface JwtPayload {
+  authorities?: unknown;
+  exp?: number;
+  fdLogin?: unknown;
+  login?: unknown;
+  preferred_username?: unknown;
+  role?: unknown;
+  roleDataId?: unknown;
+  roleId?: unknown;
+  roles?: unknown;
+  sub?: unknown;
+  username?: unknown;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthSession {
   private readonly platformId = inject(PLATFORM_ID);
@@ -14,11 +28,26 @@ export class AuthSession {
 
     if (expiresAt) {
       storage?.setItem(this.expiryKey, expiresAt);
+    } else {
+      storage?.removeItem(this.expiryKey);
     }
   }
 
   getToken(): string | null {
     return this.storage()?.getItem(this.tokenKey) ?? null;
+  }
+
+  getExpirationTime(): number | null {
+    const storedExpiry = this.storage()?.getItem(this.expiryKey);
+    if (storedExpiry) {
+      const time = Date.parse(storedExpiry);
+      if (!Number.isNaN(time)) {
+        return time;
+      }
+    }
+
+    const payload = this.getPayload();
+    return typeof payload?.exp === 'number' ? payload.exp * 1000 : null;
   }
 
   isAuthenticated(): boolean {
@@ -29,6 +58,16 @@ export class AuthSession {
     }
 
     return true;
+  }
+
+  isAdministrator(): boolean {
+    return this.isAuthenticated() && this.getRoleId() === 1;
+  }
+
+  getUserName(): string | null {
+    const payload = this.getPayload();
+    const userName = payload?.preferred_username ?? payload?.username ?? payload?.fdLogin ?? payload?.login ?? payload?.sub;
+    return typeof userName === 'string' && userName.trim() ? userName : null;
   }
 
   clear(): void {
@@ -46,23 +85,71 @@ export class AuthSession {
   }
 
   private isExpired(token: string): boolean {
-    const storageExpiry = this.storage()?.getItem(this.expiryKey);
-    if (storageExpiry && Date.parse(storageExpiry) <= Date.now()) {
-      return true;
+    const payload = this.decodeToken(token);
+    const expirationTime = this.getExpirationTime();
+    return !payload || (expirationTime !== null && expirationTime <= Date.now());
+  }
+
+  private getRoleId(): number | null {
+    const payload = this.getPayload();
+    if (!payload) {
+      return null;
     }
 
+    return this.toRoleId(payload.roleDataId)
+      ?? this.toRoleId(payload.roleId)
+      ?? this.toRoleId(payload.role)
+      ?? this.toRoleId(payload.roles)
+      ?? this.toRoleId(payload.authorities);
+  }
+
+  private getPayload(): JwtPayload | null {
+    const token = this.getToken();
+    return token ? this.decodeToken(token) : null;
+  }
+
+  private decodeToken(token: string): JwtPayload | null {
     try {
       const payload = token.split('.')[1];
       if (!payload) {
-        return true;
+        return null;
       }
 
       const base64Payload = payload.replace(/-/g, '+').replace(/_/g, '/');
       const paddedPayload = base64Payload.padEnd(base64Payload.length + ((4 - (base64Payload.length % 4)) % 4), '=');
-      const decodedPayload = JSON.parse(atob(paddedPayload)) as { exp?: number };
-      return typeof decodedPayload.exp === 'number' && decodedPayload.exp * 1000 <= Date.now();
+      return JSON.parse(atob(paddedPayload)) as JwtPayload;
     } catch {
-      return true;
+      return null;
     }
+  }
+
+  private toRoleId(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isInteger(value)) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      if (/^\d+$/.test(value)) {
+        return Number(value);
+      }
+
+      return value.toUpperCase().includes('ADMIN') ? 1 : null;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const roleId = this.toRoleId(item);
+        if (roleId !== null) {
+          return roleId;
+        }
+      }
+    }
+
+    if (value && typeof value === 'object') {
+      const record = value as Record<string, unknown>;
+      return this.toRoleId(record['idRegister']) ?? this.toRoleId(record['id']) ?? this.toRoleId(record['roleId']);
+    }
+
+    return null;
   }
 }

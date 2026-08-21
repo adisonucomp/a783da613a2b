@@ -27,7 +27,17 @@
           <a class="nav-link active" aria-current="page" routerLink="/working/dashboard">Inicio</a>
         </li>
       </ul>
-      <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
+      <div class="d-flex align-items-center gap-2">
+        @if (authSession.isAuthenticated()) {
+          @if (authSession.getUserName(); as userName) {
+            <span class="navbar-text text-white">{{ userName }}</span>
+          }
+          @if (sessionTimer.remainingTime(); as remainingTime) {
+            <span class="navbar-text text-white"><i class="bi bi-clock me-1"></i>{{ remainingTime }}</span>
+          }
+        }
+        <button class="btn btn-outline-light" type="button" (click)="logout()">Cerrar Sesión</button>
+      </div>
     </div>
   </div>
 </nav>
