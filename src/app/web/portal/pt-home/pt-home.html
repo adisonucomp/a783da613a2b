@@ -9,9 +9,16 @@
             <section class="filter-section p-3">
               <h5 class="filter-title" [class.mb-0]="filter.options.length === 0">{{ filter.title }}</h5>
               @for (option of filter.options; track option.id) {
-                <div class="form-check mb-2">
+                <div class="form-check filter-option mb-2">
                   <input class="form-check-input" type="checkbox" [id]="filter.key + '-' + option.id" [checked]="option.selected" (change)="toggleOption(filter.key, option.id, $any($event.target).checked)" />
-                  <label class="form-check-label" [for]="filter.key + '-' + option.id">{{ option.label }}</label>
+                  <label class="form-check-label" [for]="filter.key + '-' + option.id">
+                    <span>{{ option.label }}</span>
+                    @if (option.image) {
+                      <img class="filter-option-image" [src]="productImage(option.image)" alt="" />
+                    } @else {
+                      <span class="filter-option-placeholder" aria-hidden="true"><i class="bi bi-image"></i></span>
+                    }
+                  </label>
                 </div>
               }
             </section>

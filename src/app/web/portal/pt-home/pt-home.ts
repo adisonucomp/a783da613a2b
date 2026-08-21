@@ -15,6 +15,7 @@ import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg
 
 interface FilterOption {
   id: number;
+  image?: string;
   label: string;
   selected: boolean;
 }
@@ -145,7 +146,8 @@ export class PtHome implements OnInit {
     }).subscribe(({ brandDevice, brandProcessor, typeProcessor, graphicCard, operatingSystem, devices }) => {
       this.setOptions('brand-device', this.toFilterOptions(brandDevice));
       this.setOptions('brand-processor', this.toFilterOptions(brandProcessor));
-      this.setOptions('type-processor', this.toFilterOptions(typeProcessor));
+      const processorBrandImages = new Map(brandProcessor.map((brand) => [brand.idRegister, brand.fdImage]));
+      this.setOptions('type-processor', this.toFilterOptions(typeProcessor, (type) => processorBrandImages.get(type.brandProcessorId)));
       this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
       this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
       this.products.set(this.toProducts(devices, typeProcessor, graphicCard, operatingSystem));
@@ -223,8 +225,16 @@ export class PtHome implements OnInit {
     this.filters.update((sections) => sections.map((section) => section.key === sectionKey ? { ...section, options } : section));
   }
 
-  private toFilterOptions(items: Array<{ idRegister?: number; name?: string; fdName?: string }>): FilterOption[] {
-    return items.map((item) => ({ id: item.idRegister ?? 0, label: item.name ?? item.fdName ?? 'Sin nombre', selected: false }));
+  private toFilterOptions<T extends { fdImage?: string; fdName?: string; idRegister?: number; name?: string }>(
+    items: T[],
+    imageResolver?: (item: T) => string | undefined,
+  ): FilterOption[] {
+    return items.map((item) => ({
+      id: item.idRegister ?? 0,
+      image: imageResolver?.(item) ?? item.fdImage,
+      label: item.name ?? item.fdName ?? 'Sin nombre',
+      selected: false,
+    }));
   }
 
   private restoreFiltersFromCache(): void {

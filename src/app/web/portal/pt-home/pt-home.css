@@ -6,6 +6,10 @@
 .product-scroll-body { flex: 1; min-height: 0; overflow-y: auto; }
 .filter-section:not(:last-child) { border-bottom: 1px solid var(--bs-border-color); }
 .filter-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.filter-option .form-check-label { align-items: center; display: flex; justify-content: space-between; min-height: 2rem; width: calc(100% - 1.5rem); }
+.filter-option-image, .filter-option-placeholder { flex: 0 0 2rem; height: 2rem; margin-left: .5rem; width: 2rem; }
+.filter-option-image { object-fit: contain; }
+.filter-option-placeholder { align-items: center; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); color: var(--bs-secondary-color); display: inline-flex; justify-content: center; }
 .product-card:last-child { margin-bottom: 0 !important; }
 .product-title { overflow-wrap: anywhere; }
 .product-image { height: 12rem; max-width: 100%; object-fit: contain; }
