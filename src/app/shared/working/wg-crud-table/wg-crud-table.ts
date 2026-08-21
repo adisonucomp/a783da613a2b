@@ -72,7 +72,9 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   }
 
   selectRecord(record: WgRecord): void {
-    this.selectedRecord.set(record);
+    this.selectedRecord.update((selectedRecord) =>
+      selectedRecord?.idRegister === record.idRegister ? null : record,
+    );
   }
 
   openSelectedEdit(): void {
