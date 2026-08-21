@@ -20,17 +20,18 @@ import { MdB22b6431 } from './web/working/md-b22b6431/md-b22b6431';
 import { WgDashboard } from './web/working/wg-dashboard/wg-dashboard';
 import { Working } from './web/working/working';
 import { authGuard } from './guards/auth/auth-guard';
+import { guestGuard } from './guards/guest/guest-guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'portal/home' },
-  { path: 'login', component: CeLogin, },
+  { path: 'login', component: CeLogin, canActivate: [guestGuard] },
 
   {
     path: 'portal', component: Portal,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: PtHome }, // Componente Inicio
-      { path: 'register', component: PtRegister }, // Componente Registro
+      { path: 'register', component: PtRegister, canActivate: [guestGuard] }, // Componente Registro
       { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device
       { path: 'c98391c6', component: PtC98391c6 }, // Componente brand_processor
       { path: 'd0112a5a', component: PtD0112a5a }, // Componente operating_system
