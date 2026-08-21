@@ -1,1 +1,44 @@
-<p>ce-login works!</p>
+<app-pt-navbar></app-pt-navbar>
+
+<main class="auth-page container mt-5 pt-5 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h1 class="h5 mb-0">Iniciar sesión</h1>
+        </div>
+        <div class="card-body p-4">
+          <form [formGroup]="loginForm" (ngSubmit)="submit()">
+            <div class="mb-3">
+              <label class="form-label" for="fdLogin">Usuario</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input id="fdLogin" class="form-control" type="text" formControlName="fdLogin" autocomplete="username" />
+              </div>
+              @if (loginForm.controls.fdLogin.touched && loginForm.controls.fdLogin.invalid) {
+                <div class="invalid-feedback d-block">El usuario es obligatorio.</div>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label" for="fdPassd">Contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input id="fdPassd" class="form-control" type="password" formControlName="fdPassd" autocomplete="current-password" />
+              </div>
+              @if (loginForm.controls.fdPassd.touched && loginForm.controls.fdPassd.invalid) {
+                <div class="invalid-feedback d-block">La contraseña es obligatoria.</div>
+              }
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-pt-footer></app-pt-footer>

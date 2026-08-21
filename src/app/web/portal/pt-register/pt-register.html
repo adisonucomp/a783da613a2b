@@ -1,1 +1,85 @@
-<p>pt-register works!</p>
+<main class="container mt-5 pt-5 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <h1 class="h3 mb-4">Registro de comprador</h1>
+
+      <form [formGroup]="registerForm" (ngSubmit)="submit()">
+        <div class="row g-4">
+          <div class="col-12 col-md-7">
+            <section class="card h-100 shadow-sm">
+              <div class="card-header">Datos de acceso</div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="fdEmail">Correo electrónico</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input id="fdEmail" class="form-control" type="email" formControlName="fdEmail" autocomplete="email" />
+                  </div>
+                  @if (registerForm.controls.fdEmail.touched && registerForm.controls.fdEmail.invalid) {
+                    <div class="invalid-feedback d-block">Ingresa un correo electrónico válido.</div>
+                  }
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label" for="fdLogin">Usuario</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input id="fdLogin" class="form-control" type="text" formControlName="fdLogin" autocomplete="username" />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label" for="fdPassd">Contraseña</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input id="fdPassd" class="form-control" type="password" formControlName="fdPassd" autocomplete="new-password" />
+                  </div>
+                  @if (registerForm.controls.fdPassd.touched && registerForm.controls.fdPassd.invalid) {
+                    <div class="invalid-feedback d-block">Debe tener al menos 6 caracteres.</div>
+                  }
+                </div>
+
+                <div>
+                  <label class="form-label" for="confirmPassd">Confirmación de contraseña</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input id="confirmPassd" class="form-control" type="password" formControlName="confirmPassd" autocomplete="new-password" />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-12 col-md-5">
+            <section class="card h-100 shadow-sm">
+              <div class="card-header">Datos personales</div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label" for="fdName">Nombres</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-vcard"></i></span>
+                    <input id="fdName" class="form-control" type="text" formControlName="fdName" autocomplete="given-name" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="form-label" for="fdSrnm">Apellidos</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-vcard-fill"></i></span>
+                    <input id="fdSrnm" class="form-control" type="text" formControlName="fdSrnm" autocomplete="family-name" />
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-person-plus me-2"></i>Registrarme
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
