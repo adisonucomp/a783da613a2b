@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { CeLogin } from './core/ce-login/ce-login';
 import { PtHome } from './web/portal/pt-home/pt-home';
 import { PtRegister } from './web/portal/pt-register/pt-register';
+import { PtA6ac2e09 } from './web/portal/pt-a6ac2e09/pt-a6ac2e09';
 import { PtB4c4c7b1 } from './web/portal/pt-b4c4c7b1/pt-b4c4c7b1';
 import { PtC98391c6 } from './web/portal/pt-c98391c6/pt-c98391c6';
 import { PtD0112a5a } from './web/portal/pt-d0112a5a/pt-d0112a5a';
@@ -33,6 +34,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: PtHome }, // Componente Inicio
       { path: 'register', component: PtRegister, canActivate: [guestGuard] }, // Componente Registro
+      { path: 'a6ac2e09', component: PtA6ac2e09 }, // Componente graphic_card
       { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device
       { path: 'c98391c6', component: PtC98391c6 }, // Componente brand_processor
       { path: 'd0112a5a', component: PtD0112a5a }, // Componente operating_system
