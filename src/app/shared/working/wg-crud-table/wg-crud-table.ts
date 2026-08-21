@@ -417,7 +417,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     for (const field of this.fields.filter((item) => item.type === 'image' && this.isFieldVisible(item))) {
       const image = record[field.key];
       if (typeof image === 'string' && image) {
-        previews[field.key] = image;
+        previews[field.key] = this.toImagePreview(image);
         names[field.key] = 'Imagen actual';
       }
     }
@@ -486,17 +486,31 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const image = typeof reader.result === 'string' ? reader.result : '';
-      if (!image) {
+      const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+      const base64 = dataUrl.split(',')[1] ?? '';
+      if (!dataUrl || !base64) {
         return;
       }
 
-      this.form.get(field.key)?.setValue(image);
+      this.form.get(field.key)?.setValue(base64);
       this.form.get(field.key)?.markAsDirty();
-      this.imagePreviews.update((previews) => ({ ...previews, [field.key]: image }));
+      this.imagePreviews.update((previews) => ({ ...previews, [field.key]: dataUrl }));
       this.imageNames.update((names) => ({ ...names, [field.key]: file.name }));
     };
     reader.readAsDataURL(file);
+  }
+
+  private toImagePreview(image: string): string {
+    if (image.startsWith('data:image/')) {
+      return image;
+    }
+
+    const mimeType = image.startsWith('iVBORw') ? 'image/png'
+      : image.startsWith('/9j/') ? 'image/jpeg'
+      : image.startsWith('R0lGOD') ? 'image/gif'
+      : image.startsWith('UklGR') ? 'image/webp'
+      : 'image/png';
+    return `data:${mimeType};base64,${image}`;
   }
 
   private toRelationOptions(relation: WgRelation, items: unknown[]): RelationOption[] {
