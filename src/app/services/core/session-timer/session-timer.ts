@@ -26,8 +26,10 @@ export class SessionTimer {
   private lastSessionSyncValue?: number;
   private syncChannel?: BroadcastChannel;
   private trackedExpirationTime?: number;
+  private activeWarning?: 'fifteen' | 'five';
   private warnedAtFiveMinutes = false;
   private warnedAtFifteenMinutes = false;
+  private warningVersion = 0;
 
   readonly remainingTime = signal('');
 
@@ -51,8 +53,15 @@ export class SessionTimer {
       return;
     }
 
+    if (this.trackedExpirationTime === expiresAt && this.intervalId) {
+      this.tick();
+      return;
+    }
+
     this.stop();
     this.trackedExpirationTime = expiresAt;
+    this.warningVersion++;
+    this.activeWarning = undefined;
     this.warnedAtFiveMinutes = false;
     this.warnedAtFifteenMinutes = false;
     this.tick();
@@ -100,8 +109,12 @@ export class SessionTimer {
 
     if (millisecondsRemaining <= 5 * 60_000 && !this.warnedAtFiveMinutes) {
       this.warnedAtFiveMinutes = true;
+      this.warnedAtFifteenMinutes = true;
       void this.askToExtendSession();
-    } else if (millisecondsRemaining <= 15 * 60_000 && !this.warnedAtFifteenMinutes) {
+      return;
+    }
+
+    if (millisecondsRemaining <= 15 * 60_000 && !this.warnedAtFifteenMinutes) {
       this.warnedAtFifteenMinutes = true;
       void this.showFifteenMinuteWarning();
     }
@@ -116,11 +129,14 @@ export class SessionTimer {
   }
 
   private async showFifteenMinuteWarning(): Promise<void> {
-    if (!this.canShowAlerts()) {
+    const millisecondsRemaining = (this.authSession.getExpirationTime() ?? 0) - Date.now();
+    if (!this.canShowAlerts() || millisecondsRemaining <= 5 * 60_000 || this.activeWarning === 'five') {
       return;
     }
 
-    await Swal.fire({
+    const warningVersion = ++this.warningVersion;
+    this.activeWarning = 'fifteen';
+    const result = await Swal.fire({
       allowEscapeKey: false,
       allowOutsideClick: false,
       confirmButtonText: 'Aceptar',
@@ -128,7 +144,14 @@ export class SessionTimer {
       text: 'Su sesión finalizará en aproximadamente 15 minutos.',
       title: 'Sesión próxima a expirar',
     });
-    this.acknowledgeAlert('warning');
+    if (warningVersion !== this.warningVersion) {
+      return;
+    }
+
+    this.activeWarning = undefined;
+    if (result.isConfirmed) {
+      this.acknowledgeAlert('warning');
+    }
   }
 
   private async askToExtendSession(): Promise<void> {
@@ -136,6 +159,10 @@ export class SessionTimer {
       return;
     }
 
+    const warningVersion = ++this.warningVersion;
+    this.activeWarning = 'five';
+    // La alerta de 5 minutos tiene prioridad sobre cualquier aviso anterior.
+    Swal.close();
     const result = await Swal.fire({
       allowEscapeKey: false,
       allowOutsideClick: false,
@@ -148,6 +175,11 @@ export class SessionTimer {
       title: 'Su sesión finaliza en 5 minutos',
     });
 
+    if (warningVersion !== this.warningVersion) {
+      return;
+    }
+
+    this.activeWarning = undefined;
     if (result.isConfirmed) {
       this.acknowledgeAlert('extend');
       await this.extendSession();
