@@ -26,6 +26,7 @@ export const routes: Routes = [
   {
     path: 'portal',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: PtHome }, // Componente Inicio
       { path: 'register', component: PtRegister }, // Componente Registro
       { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device
@@ -37,6 +38,7 @@ export const routes: Routes = [
   {
     path: 'working', component: Working,
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: WgDashboard }, // Componente Panel de Control
 
       { path: 'a6ac2e09', component: MdA6ac2e09 }, // Modulo graphic_card
