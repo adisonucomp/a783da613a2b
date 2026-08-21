@@ -13,8 +13,9 @@
 .detail-table td, .detail-table th { padding: .65rem 1rem; vertical-align: middle; }
 .detail-text { overflow-wrap: anywhere; white-space: pre-wrap; }
 .modal { z-index: 1060; }
+.modal-main-image-card .card-body { min-height: 16rem; }
 .modal-product-image { max-height: calc(100vh - 20rem); object-fit: contain; }
-.modal-gallery-list { display: flex; gap: .75rem; max-width: 100%; overflow-x: auto; }
+.modal-gallery-list { display: flex; gap: .75rem; justify-content: safe center; max-width: 100%; overflow-x: auto; padding-bottom: .25rem; }
 .modal-thumbnail { align-items: center; background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); display: flex; flex: 0 0 5.5rem; height: 5.5rem; justify-content: center; padding: .25rem; }
 .modal-thumbnail.active { border-color: var(--bs-primary); box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .25); }
 .modal-thumbnail img { height: 4.75rem; max-width: 100%; object-fit: contain; }
