@@ -220,6 +220,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
         }
 
         this.records.set(records as WgRecord[]);
+        this.loadRelationOptions();
         this.tableVisible.set(true);
         this.closeAlert();
         void this.initializeDataTable(currentLoadId);
@@ -319,6 +320,14 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   }
 
   value(record: WgRecord, field: WgCrudField): string {
+    if (field.relation) {
+      const relatedId = record[field.key];
+      const relatedOption = (this.relationOptions()[field.relation] ?? []).find(
+        (option) => option.id === Number(relatedId),
+      );
+      return relatedOption?.label ?? '—';
+    }
+
     const value = record[field.key];
     return value === undefined || value === null || value === '' ? '—' : String(value);
   }

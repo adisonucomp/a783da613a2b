@@ -20,7 +20,7 @@ export const userDataConfig: WgCrudConfig = {
   title: 'Usuarios',
   showPasswordAction: true,
   fields: [
-    { key: 'fdEmail', label: 'Correo electrónico', type: 'email' },
+    { key: 'fdEmail', label: 'Correo Electrónico', type: 'email' },
     { key: 'fdLogin', label: 'Usuario' },
     { key: 'fdPassd', label: 'Contraseña', type: 'password', createOnly: true },
     { key: 'fdName', label: 'Nombres' },
@@ -33,7 +33,7 @@ export const typeProcessorConfig: WgCrudConfig = {
   title: 'Tipos de Procesador',
   fields: [
     { key: 'fdName', label: 'Nombre' },
-    { key: 'brandProcessorId', label: 'Marca de Procesador', relation: 'brand-processor' },
+    { key: 'brandProcessorId', label: 'Marca', relation: 'brand-processor' },
   ],
 };
 
@@ -51,13 +51,13 @@ export const deviceDataConfig: WgCrudConfig = {
     { key: 'fdStock', label: 'Stock', type: 'number' },
     { key: 'fdRam', label: 'Memoria RAM' },
     { key: 'fdStorage', label: 'Almacenamiento' },
-    { key: 'fdScreenSize', label: 'Tamaño de pantalla' },
-    { key: 'fdRelease', label: 'Fecha de lanzamiento', type: 'date' },
+    { key: 'fdScreenSize', label: 'Tamaño de Pantalla' },
+    { key: 'fdRelease', label: 'Fecha de Lanzamiento', type: 'date' },
     { key: 'fdImage', label: 'Imagen' },
-    { key: 'brandDeviceId', label: 'Marca de dispositivo', relation: 'brand-device' },
-    { key: 'graphicCardId', label: 'Tarjeta gráfica', relation: 'graphic-card' },
-    { key: 'operatingSystemId', label: 'Sistema operativo', relation: 'operating-system' },
-    { key: 'typeProcessorId', label: 'Tipo de procesador', relation: 'type-processor' },
+    { key: 'brandDeviceId', label: 'Marca de Dispositivo', relation: 'brand-device' },
+    { key: 'graphicCardId', label: 'Tarjeta Gráfica', relation: 'graphic-card' },
+    { key: 'operatingSystemId', label: 'Sistema Operativo', relation: 'operating-system' },
+    { key: 'typeProcessorId', label: 'Tipo de Procesador', relation: 'type-processor' },
   ],
 };
 
@@ -91,8 +91,8 @@ export const operatingSystemConfig: WgCrudConfig = {
 export const deviceImageConfig: WgCrudConfig = {
   title: 'Imágenes de Dispositivos',
   fields: [
-    { key: 'fdData', label: 'Datos de imagen', type: 'textarea' },
+    { key: 'fdData', label: 'Imagen', type: 'textarea' },
     { key: 'deviceId', label: 'Dispositivo', relation: 'device-data' },
-    { key: 'imageExtId', label: 'Extensión de imagen', relation: 'image-ext' },
+    { key: 'imageExtId', label: 'Extensión', relation: 'image-ext' },
   ],
 };
