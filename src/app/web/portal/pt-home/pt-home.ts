@@ -37,8 +37,11 @@ interface ProductCard {
   price: number;
   processor: string;
   processorBrandId: number;
+  releaseDate: string;
   typeProcessorId: number;
 }
+
+type ProductSort = 'graphic-card' | 'operating-system' | 'price-asc' | 'price-desc' | 'processor' | 'release-asc' | 'release-desc';
 
 @Component({
   imports: [RouterLink],
@@ -62,6 +65,7 @@ export class PtHome implements OnInit {
   readonly page = signal(1);
   readonly pageSize = 25;
   readonly products = signal<ProductCard[]>([]);
+  readonly sort = signal<ProductSort>('release-desc');
   readonly filters = signal<FilterSection[]>([
     { key: 'brand-device', title: 'Marcas de Dispositivos', options: [] },
     { key: 'brand-processor', title: 'Marcas de Procesadores', options: [] },
@@ -70,10 +74,11 @@ export class PtHome implements OnInit {
     { key: 'operating-system', title: 'Sistemas Operativos', options: [] },
   ]);
   readonly filteredProducts = computed(() => this.products().filter((product) => this.matchesFilters(product)));
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredProducts().length / this.pageSize)));
+  readonly sortedProducts = computed(() => this.sortProducts(this.filteredProducts(), this.sort()));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.sortedProducts().length / this.pageSize)));
   readonly visibleProducts = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
-    return this.filteredProducts().slice(start, start + this.pageSize);
+    return this.sortedProducts().slice(start, start + this.pageSize);
   });
 
   ngOnInit(): void {
@@ -102,6 +107,14 @@ export class PtHome implements OnInit {
 
   nextPage(): void {
     this.page.update((page) => Math.min(this.totalPages(), page + 1));
+  }
+
+  setSort(value: string): void {
+    const validSorts: ProductSort[] = ['release-desc', 'release-asc', 'processor', 'graphic-card', 'operating-system', 'price-desc', 'price-asc'];
+    if (validSorts.includes(value as ProductSort)) {
+      this.sort.set(value as ProductSort);
+      this.page.set(1);
+    }
   }
 
   formatPrice(price: number): string {
@@ -172,7 +185,25 @@ export class PtHome implements OnInit {
         operatingSystem: systems.get(device.operatingSystemId) ?? 'No especificado',
         operatingSystemId: device.operatingSystemId,
         price: Number(device.fdPrice) || 0,
+        releaseDate: device.fdRelease,
       }));
+  }
+
+  private sortProducts(products: ProductCard[], sort: ProductSort): ProductCard[] {
+    const byText = (left: string, right: string) => left.localeCompare(right, 'es', { sensitivity: 'base' });
+    const byDate = (left: string, right: string) => Date.parse(left || '1900-01-01') - Date.parse(right || '1900-01-01');
+
+    return [...products].sort((left, right) => {
+      switch (sort) {
+        case 'release-asc': return byDate(left.releaseDate, right.releaseDate);
+        case 'release-desc': return byDate(right.releaseDate, left.releaseDate);
+        case 'processor': return byText(left.processor, right.processor);
+        case 'graphic-card': return byText(left.graphicCard, right.graphicCard);
+        case 'operating-system': return byText(left.operatingSystem, right.operatingSystem);
+        case 'price-asc': return left.price - right.price;
+        case 'price-desc': return right.price - left.price;
+      }
+    });
   }
 
   private matchesFilters(product: ProductCard): boolean {

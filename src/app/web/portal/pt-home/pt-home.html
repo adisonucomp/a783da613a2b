@@ -22,7 +22,22 @@
 
     <div class="col-12 col-lg-9 d-flex product-column">
       <section class="card products-card w-100">
-        <div class="card-header d-flex justify-content-between align-items-center"><span>Productos</span><small class="text-body-secondary">{{ filteredProducts().length }} registrados</small></div>
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <span>Productos</span>
+          <div class="d-flex flex-wrap align-items-center justify-content-end gap-2">
+            <small class="text-body-secondary">{{ filteredProducts().length }} registrados</small>
+            <label class="visually-hidden" for="product-sort">Ordenar productos</label>
+            <select id="product-sort" class="form-select form-select-sm product-sort" [value]="sort()" (change)="setSort($any($event.target).value)">
+              <option value="release-desc">Lanzamiento: reciente a antiguo</option>
+              <option value="release-asc">Lanzamiento: antiguo a reciente</option>
+              <option value="processor">Procesador: A a Z</option>
+              <option value="graphic-card">Tarjeta gráfica: A a Z</option>
+              <option value="operating-system">Sistema operativo: A a Z</option>
+              <option value="price-desc">Precio: mayor a menor</option>
+              <option value="price-asc">Precio: menor a mayor</option>
+            </select>
+          </div>
+        </div>
         <div class="card-body product-scroll-body">
           @if (loadingProducts()) {
             <p class="text-body-secondary mb-0">Cargando productos...</p>
