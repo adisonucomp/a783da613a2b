@@ -30,7 +30,6 @@
           <table #dataTable class="table table-hover align-middle w-100">
           <thead>
             <tr>
-              <th>#</th>
               @for (field of fields; track field.key) {
                 @if (!field.createOnly) {
                   <th>{{ field.label }}</th>
@@ -41,7 +40,6 @@
           <tbody>
             @for (record of records(); track record.idRegister) {
               <tr class="selectable-row" [class.table-primary]="selectedRecord()?.idRegister === record.idRegister" (click)="selectRecord(record)">
-                <td>{{ record.idRegister }}</td>
                 @for (field of fields; track field.key) {
                   @if (!field.createOnly) {
                     <td>
