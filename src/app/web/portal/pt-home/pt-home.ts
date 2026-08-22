@@ -13,7 +13,7 @@ import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg
 import { SgB2c17bdf } from '../../../services/backend/java/spring/sg-b2c17bdf/sg-b2c17bdf';
 import { SgB4c4c7b1 } from '../../../services/backend/java/spring/sg-b4c4c7b1/sg-b4c4c7b1';
 import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg-b8043c54';
-import { SgB9f50faa } from '../../../services/backend/java/spring/sg-b9f50faa/sg-b9f50faa';
+import { DeviceRating, SgB9f50faa } from '../../../services/backend/java/spring/sg-b9f50faa/sg-b9f50faa';
 import { SgB2412519 } from '../../../services/backend/java/spring/sg-b2412519/sg-b2412519';
 import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
@@ -55,6 +55,16 @@ interface ProductComment extends MdB9f50faa {
   userName: string;
 }
 
+const EMPTY_DEVICE_RATING: DeviceRating = {
+  averageRating: 0,
+  opinionCount: 0,
+  rating1Count: 0,
+  rating2Count: 0,
+  rating3Count: 0,
+  rating4Count: 0,
+  rating5Count: 0,
+};
+
 type ProductSort = 'graphic-card' | 'operating-system' | 'price-asc' | 'price-desc' | 'processor' | 'release-asc' | 'release-desc';
 
 @Component({
@@ -87,12 +97,14 @@ export class PtHome implements OnInit, OnDestroy {
   readonly commentsLoading = signal(false);
   readonly commentsModalOpen = signal(false);
   readonly commentsProductName = signal('');
+  readonly deviceRating = signal<DeviceRating>(EMPTY_DEVICE_RATING);
   readonly loadingFilters = signal(true);
   readonly loadingProducts = signal(true);
   readonly page = signal(1);
   readonly pageSize = 25;
   readonly products = signal<ProductCard[]>([]);
   readonly productComments = signal<ProductComment[]>([]);
+  readonly ratingLevels = [5, 4, 3, 2, 1];
   readonly ratingStars = [1, 2, 3, 4, 5];
   readonly commentForm = this.formBuilder.nonNullable.group({
     fdContent: ['', [Validators.required, Validators.maxLength(2_000)]],
@@ -211,11 +223,13 @@ export class PtHome implements OnInit, OnDestroy {
 
   private loadComments(deviceId: number): void {
     this.productComments.set([]);
+    this.deviceRating.set(EMPTY_DEVICE_RATING);
     this.commentsLoading.set(true);
     forkJoin({
       comments: this.commentService.getAll().pipe(catchError(() => of([]))),
+      rating: this.commentService.getDeviceRating(deviceId).pipe(catchError(() => of(EMPTY_DEVICE_RATING))),
       users: this.authSession.isAuthenticated() ? this.userService.getAll().pipe(catchError(() => of([]))) : of([]),
-    }).subscribe(({ comments, users }) => {
+    }).subscribe(({ comments, rating, users }) => {
       const usersById = new Map(users.map((user) => [
         user.idRegister,
         `${user.fdName} ${user.fdSrnm}`.trim() || user.fdLogin,
@@ -229,6 +243,7 @@ export class PtHome implements OnInit, OnDestroy {
             userName: usersById.get(comment.userId) ?? `Usuario #${comment.userId}`,
           })),
       );
+      this.deviceRating.set(rating);
       this.commentsLoading.set(false);
     });
   }
@@ -274,6 +289,20 @@ export class PtHome implements OnInit, OnDestroy {
       return [comment.fdDate, comment.fdHour].filter(Boolean).join(' ');
     }
     return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(parsedDate);
+  }
+
+  formatAverageRating(value: number): string {
+    return Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1);
+  }
+
+  ratingCount(rating: number): number {
+    const property = `rating${rating}Count` as keyof Pick<DeviceRating, 'rating1Count' | 'rating2Count' | 'rating3Count' | 'rating4Count' | 'rating5Count'>;
+    return this.deviceRating()[property];
+  }
+
+  ratingPercentage(rating: number): number {
+    const total = this.deviceRating().opinionCount;
+    return total > 0 ? (this.ratingCount(rating) / total) * 100 : 0;
   }
 
   productImage(image: string): string {
