@@ -86,7 +86,7 @@
             <div class="row g-3">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
-                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth">
+                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth" [class.relation-field]="field.relation">
                   <label class="form-label" [for]="'field-' + field.key">
                     {{ field.label }}@if (field.required !== false) { <span class="text-danger" aria-hidden="true">*</span> }
                   </label>

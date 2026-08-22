@@ -79,6 +79,10 @@
   z-index: 1070;
 }
 
+.relation-field {
+  margin-top: calc(var(--bs-gutter-y) + .5rem);
+}
+
 .relation-option {
   border-radius: 0;
   color: var(--bs-body-color);
