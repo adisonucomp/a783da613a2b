@@ -29,7 +29,7 @@
 .rating-star:focus-visible { border-radius: var(--bs-border-radius); outline: 2px solid var(--bs-primary); outline-offset: 2px; }
 .comment-content-group { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 .comment-content-group textarea { flex: 1; min-height: 12rem; resize: vertical; }
-.comment-item:not(:last-child) { border-bottom: 1px solid var(--bs-border-color); }
+.comment-item { border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); margin-bottom: 1rem; padding: 1rem; }
 .comment-rating { color: #ffc107; letter-spacing: .1rem; white-space: nowrap; }
 .comment-content { overflow-wrap: anywhere; white-space: pre-wrap; }
 @media (max-width: 575.98px) { .comments-modal-dialog { max-width: calc(100vw - .5rem); margin: .25rem .25rem .25rem auto; height: calc(100dvh - .5rem); } }

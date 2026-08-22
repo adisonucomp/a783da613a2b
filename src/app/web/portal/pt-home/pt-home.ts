@@ -51,6 +51,10 @@ interface ProductCard {
   typeProcessorId: number;
 }
 
+interface ProductComment extends MdB9f50faa {
+  userName: string;
+}
+
 type ProductSort = 'graphic-card' | 'operating-system' | 'price-asc' | 'price-desc' | 'processor' | 'release-asc' | 'release-desc';
 
 @Component({
@@ -88,7 +92,7 @@ export class PtHome implements OnInit, OnDestroy {
   readonly page = signal(1);
   readonly pageSize = 25;
   readonly products = signal<ProductCard[]>([]);
-  readonly productComments = signal<MdB9f50faa[]>([]);
+  readonly productComments = signal<ProductComment[]>([]);
   readonly ratingStars = [1, 2, 3, 4, 5];
   readonly commentForm = this.formBuilder.nonNullable.group({
     fdContent: ['', [Validators.required, Validators.maxLength(2_000)]],
@@ -208,11 +212,22 @@ export class PtHome implements OnInit, OnDestroy {
   private loadComments(deviceId: number): void {
     this.productComments.set([]);
     this.commentsLoading.set(true);
-    this.commentService.getAll().pipe(catchError(() => of([]))).subscribe((comments) => {
+    forkJoin({
+      comments: this.commentService.getAll().pipe(catchError(() => of([]))),
+      users: this.authSession.isAuthenticated() ? this.userService.getAll().pipe(catchError(() => of([]))) : of([]),
+    }).subscribe(({ comments, users }) => {
+      const usersById = new Map(users.map((user) => [
+        user.idRegister,
+        `${user.fdName} ${user.fdSrnm}`.trim() || user.fdLogin,
+      ]));
       this.productComments.set(
         comments
           .filter((comment) => comment.deviceId === deviceId)
-          .sort((left, right) => `${right.fdDate} ${right.fdHour}`.localeCompare(`${left.fdDate} ${left.fdHour}`)),
+          .sort((left, right) => `${right.fdDate} ${right.fdHour}`.localeCompare(`${left.fdDate} ${left.fdHour}`))
+          .map((comment) => ({
+            ...comment,
+            userName: usersById.get(comment.userId) ?? `Usuario #${comment.userId}`,
+          })),
       );
       this.commentsLoading.set(false);
     });

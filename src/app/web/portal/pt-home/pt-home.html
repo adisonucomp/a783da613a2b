@@ -135,11 +135,14 @@
               <p class="text-body-secondary mb-0">Cargando comentarios...</p>
             } @else {
               @for (comment of productComments(); track comment.idRegister) {
-                <article class="comment-item py-3">
+                <article class="comment-item">
                   <div class="d-flex justify-content-between gap-3 mb-2">
-                    <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
-                      @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
-                    </span>
+                    <div>
+                      <h3 class="h6 mb-1"><i class="bi bi-person-circle me-1"></i>{{ comment.userName }}</h3>
+                      <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
+                        @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
+                      </span>
+                    </div>
                     <small class="text-body-secondary text-end">{{ formatCommentDate(comment) }}</small>
                   </div>
                   <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
