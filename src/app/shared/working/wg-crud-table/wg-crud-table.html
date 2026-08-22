@@ -83,10 +83,10 @@
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeFormModal()"></button>
         </div>
           <div class="modal-body">
-            <div class="row g-3">
+            <div class="row">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
-                <div class="col-12" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth" [class.relation-field]="field.relation">
+                <div class="col-12 mb-3" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth">
                   <label class="form-label" [for]="'field-' + field.key">
                     {{ field.label }}@if (field.required !== false) { <span class="text-danger" aria-hidden="true">*</span> }
                   </label>
@@ -144,7 +144,7 @@
                   }
                 </div>
                 @if (field.type === 'image' && imagePreview(field)) {
-                  <div class="col-12 image-preview-field">
+                  <div class="col-12 mb-3 image-preview-field">
                     <label class="form-label">Vista previa</label>
                     <div class="border rounded p-2 text-center">
                       <img class="img-fluid image-preview" [src]="imagePreview(field)" alt="Vista previa de la imagen seleccionada" />
