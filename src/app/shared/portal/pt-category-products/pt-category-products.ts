@@ -16,14 +16,17 @@ interface ProductItem {
   brandDeviceId: number;
   graphicCard: string;
   graphicCardId: number;
+  graphicCardImage?: string;
   id: number;
   image: string;
   name: string;
   operatingSystem: string;
   operatingSystemId: number;
+  operatingSystemImage?: string;
   price: number;
   processor: string;
   processorBrandId: number;
+  processorImage?: string;
 }
 
 @Component({
@@ -34,6 +37,7 @@ interface ProductItem {
 })
 export class PtCategoryProducts implements OnInit {
   @Input({ required: true }) category!: PortalCategory;
+  @Input() showRelatedImages = false;
   @Input({ required: true }) title = '';
 
   private readonly platformId = inject(PLATFORM_ID);
@@ -82,6 +86,12 @@ export class PtCategoryProducts implements OnInit {
       const processors = names(typeProcessors);
       const graphics = names(graphicCards);
       const systems = names(operatingSystems);
+      const images = (items: Array<{ fdImage?: string; idRegister?: number }>) => new Map(
+        items.map((entry) => [entry.idRegister, entry.fdImage]),
+      );
+      const processorImages = images(brandProcessors);
+      const graphicImages = images(graphicCards);
+      const systemImages = images(operatingSystems);
 
       this.categoryItems.set(categoryItems[this.category]);
       this.products.set(devices.filter((device) => typeof device.idRegister === 'number').map((device) => ({
@@ -92,10 +102,13 @@ export class PtCategoryProducts implements OnInit {
         brandDeviceId: device.brandDeviceId,
         processor: processors.get(device.typeProcessorId) ?? 'No especificado',
         processorBrandId: typesById.get(device.typeProcessorId)?.brandProcessorId ?? 0,
+        processorImage: processorImages.get(typesById.get(device.typeProcessorId)?.brandProcessorId),
         graphicCard: graphics.get(device.graphicCardId) ?? 'No especificada',
         graphicCardId: device.graphicCardId,
+        graphicCardImage: graphicImages.get(device.graphicCardId),
         operatingSystem: systems.get(device.operatingSystemId) ?? 'No especificado',
         operatingSystemId: device.operatingSystemId,
+        operatingSystemImage: systemImages.get(device.operatingSystemId),
       })));
       this.loading.set(false);
     });

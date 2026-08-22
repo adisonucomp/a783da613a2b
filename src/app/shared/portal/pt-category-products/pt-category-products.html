@@ -32,10 +32,19 @@
                     <h2 class="h6 mb-3">{{ product.name }}</h2>
                     <img class="product-image mb-3" [src]="imageSource(product.image)" [alt]="product.name" />
                     <table class="table table-sm mb-3"><tbody>
-                      <tr><th>Procesador</th><td>{{ product.processor }}</td></tr>
-                      <tr><th>Tarjeta gráfica</th><td>{{ product.graphicCard }}</td></tr>
-                      <tr><th>Sistema operativo</th><td>{{ product.operatingSystem }}</td></tr>
-                      <tr><th>Precio</th><td class="text-primary fw-semibold">{{ formatPrice(product.price) }}</td></tr>
+                      <tr>
+                        <th>Procesador</th><td>{{ product.processor }}</td>
+                        @if (showRelatedImages) { <td class="product-related-image-cell">@if (imageSource(product.processorImage); as image) { <img class="product-related-image" [src]="image" [alt]="product.processor" /> } @else { <i class="bi bi-cpu text-body-secondary"></i> }</td> }
+                      </tr>
+                      <tr>
+                        <th>Tarjeta gráfica</th><td>{{ product.graphicCard }}</td>
+                        @if (showRelatedImages) { <td class="product-related-image-cell">@if (imageSource(product.graphicCardImage); as image) { <img class="product-related-image" [src]="image" [alt]="product.graphicCard" /> } @else { <i class="bi bi-gpu-card text-body-secondary"></i> }</td> }
+                      </tr>
+                      <tr>
+                        <th>Sistema operativo</th><td>{{ product.operatingSystem }}</td>
+                        @if (showRelatedImages) { <td class="product-related-image-cell">@if (imageSource(product.operatingSystemImage); as image) { <img class="product-related-image" [src]="image" [alt]="product.operatingSystem" /> } @else { <i class="bi bi-windows text-body-secondary"></i> }</td> }
+                      </tr>
+                      <tr><th>Precio</th><td class="text-primary fw-semibold">{{ formatPrice(product.price) }}</td>@if (showRelatedImages) { <td></td> }</tr>
                     </tbody></table>
                     <a class="btn btn-primary w-100 mt-auto" [routerLink]="['/portal/product', product.id]">Detalle</a>
                   </div>

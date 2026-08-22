@@ -6,5 +6,7 @@
 .category-item-image { object-fit: contain; }
 .category-item-placeholder { align-items: center; background: var(--bs-tertiary-bg); border-radius: var(--bs-border-radius); color: var(--bs-secondary-color); display: inline-flex; font-size: 1.5rem; justify-content: center; }
 .product-image { display: block; height: 10rem; margin-inline: auto; max-width: 100%; object-fit: contain; }
+.product-related-image-cell { text-align: center; vertical-align: middle; width: 3.5rem; }
+.product-related-image { height: 1.7rem; max-width: 3rem; object-fit: contain; }
 .product-card th { width: 45%; }
 .product-card td, .product-card th { vertical-align: middle; }
