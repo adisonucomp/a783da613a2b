@@ -162,6 +162,7 @@
                   </section>
                 </div>
               </div>
+              <div class="comments-list">
               @for (comment of productComments(); track comment.idRegister) {
                 <article class="comment-item">
                   <div class="row g-2 mb-2">
@@ -182,6 +183,7 @@
               } @empty {
                 <p class="text-body-secondary mb-0">Este producto aún no tiene comentarios.</p>
               }
+              </div>
             }
           }
         </div>
