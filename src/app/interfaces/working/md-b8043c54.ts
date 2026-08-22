@@ -2,14 +2,14 @@ export interface MdB8043c54 {
   idRegister?: number;
   brandDeviceId: number;
   fdCode: string;
-  fdDiscount: number;
+  fdDto: number;
   fdDetail: string;
   fdImage: string;
   fdName: string;
   fdPrice: number;
-  fdRam: string;
+  fdRam: number;
   fdRelease: string;
-  fdScreenSize: string;
+  fdScreenSize: number;
   fdStock: number;
   fdStorage: string;
   graphicCardId: number;
