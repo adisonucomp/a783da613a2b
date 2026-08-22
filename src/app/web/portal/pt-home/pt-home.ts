@@ -246,6 +246,7 @@ export class PtHome implements OnInit, OnDestroy {
           })),
       );
       this.deviceRating.set(rating);
+      this.productRatings.update((ratings) => ({ ...ratings, [deviceId]: rating }));
       this.commentsLoading.set(false);
     });
   }
