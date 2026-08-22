@@ -30,14 +30,17 @@ interface ProductCard {
   brandDeviceId: number;
   graphicCard: string;
   graphicCardId: number;
+  graphicCardImage?: string;
   id: number;
   image: string;
   name: string;
   operatingSystem: string;
   operatingSystemId: number;
+  operatingSystemImage?: string;
   price: number;
   processor: string;
   processorBrandId: number;
+  processorImage?: string;
   releaseDate: string;
   typeProcessorId: number;
 }
@@ -150,7 +153,7 @@ export class PtHome implements OnInit {
       this.setOptions('type-processor', this.toFilterOptions(typeProcessor, (type) => processorBrandImages.get(type.brandProcessorId)));
       this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
       this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
-      this.products.set(this.toProducts(devices, typeProcessor, graphicCard, operatingSystem));
+      this.products.set(this.toProducts(devices, typeProcessor, graphicCard, operatingSystem, brandProcessor));
       this.page.set(1);
       this.loadingFilters.set(false);
       this.loadingProducts.set(false);
@@ -163,6 +166,7 @@ export class PtHome implements OnInit {
     processorTypes: MdB2c17bdf[],
     graphicCards: MdA6ac2e09[],
     operatingSystems: MdD0112a5a[],
+    processorBrands: Array<{ fdImage?: string; idRegister?: number }>,
   ): ProductCard[] {
     const namesById = (items: Array<{ idRegister?: number; fdName: string }>) => new Map(
       items.map((item) => [item.idRegister, item.fdName]),
@@ -171,6 +175,9 @@ export class PtHome implements OnInit {
     const processorTypesById = new Map(processorTypes.map((processor) => [processor.idRegister, processor]));
     const graphics = namesById(graphicCards);
     const systems = namesById(operatingSystems);
+    const processorImages = new Map(processorBrands.map((brand) => [brand.idRegister, brand.fdImage]));
+    const graphicImages = new Map(graphicCards.map((graphic) => [graphic.idRegister, graphic.fdImage]));
+    const systemImages = new Map(operatingSystems.map((system) => [system.idRegister, system.fdImage]));
 
     return devices
       .filter((device) => typeof device.idRegister === 'number')
@@ -181,11 +188,14 @@ export class PtHome implements OnInit {
         brandDeviceId: device.brandDeviceId,
         processor: processors.get(device.typeProcessorId) ?? 'No especificado',
         processorBrandId: processorTypesById.get(device.typeProcessorId)?.brandProcessorId ?? 0,
+        processorImage: processorImages.get(processorTypesById.get(device.typeProcessorId)?.brandProcessorId),
         typeProcessorId: device.typeProcessorId,
         graphicCard: graphics.get(device.graphicCardId) ?? 'No especificada',
         graphicCardId: device.graphicCardId,
+        graphicCardImage: graphicImages.get(device.graphicCardId),
         operatingSystem: systems.get(device.operatingSystemId) ?? 'No especificado',
         operatingSystemId: device.operatingSystemId,
+        operatingSystemImage: systemImages.get(device.operatingSystemId),
         price: Number(device.fdPrice) || 0,
         releaseDate: device.fdRelease,
       }));

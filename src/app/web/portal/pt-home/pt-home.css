@@ -15,5 +15,7 @@
 .product-image { height: 12rem; max-width: 100%; object-fit: contain; }
 .product-features th { width: 42%; }
 .product-features td, .product-features th { vertical-align: middle; }
+.related-image-cell { text-align: center; width: 4rem; }
+.related-image { height: 2rem; max-width: 3.25rem; object-fit: contain; }
 .product-sort { width: 15.5rem; }
 @media (max-width: 991.98px) { .sidebar-card, .products-card { height: auto; max-height: none; } .product-scroll-body { overflow: visible; } }

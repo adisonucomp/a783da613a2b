@@ -60,10 +60,19 @@
                     <div class="col-12 col-md-8">
                       <table class="table table-sm product-features mb-3">
                         <tbody>
-                          <tr><th scope="row">Procesador</th><td>{{ product.processor }}</td></tr>
-                          <tr><th scope="row">Tarjeta gráfica</th><td>{{ product.graphicCard }}</td></tr>
-                          <tr><th scope="row">Sistema operativo</th><td>{{ product.operatingSystem }}</td></tr>
-                          <tr><th scope="row">Precio</th><td class="fw-semibold text-primary">{{ formatPrice(product.price) }}</td></tr>
+                          <tr>
+                            <th scope="row">Procesador</th><td>{{ product.processor }}</td>
+                            <td class="related-image-cell">@if (product.processorImage) { <img class="related-image" [src]="productImage(product.processorImage)" [alt]="product.processor" /> } @else { <i class="bi bi-cpu text-body-secondary"></i> }</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Tarjeta gráfica</th><td>{{ product.graphicCard }}</td>
+                            <td class="related-image-cell">@if (product.graphicCardImage) { <img class="related-image" [src]="productImage(product.graphicCardImage)" [alt]="product.graphicCard" /> } @else { <i class="bi bi-gpu-card text-body-secondary"></i> }</td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Sistema operativo</th><td>{{ product.operatingSystem }}</td>
+                            <td class="related-image-cell">@if (product.operatingSystemImage) { <img class="related-image" [src]="productImage(product.operatingSystemImage)" [alt]="product.operatingSystem" /> } @else { <i class="bi bi-windows text-body-secondary"></i> }</td>
+                          </tr>
+                          <tr><th scope="row">Precio</th><td class="fw-semibold text-primary">{{ formatPrice(product.price) }}</td><td></td></tr>
                         </tbody>
                       </table>
                       <a class="btn btn-primary w-100" [routerLink]="['/portal/product', product.id]">Detalle</a>
