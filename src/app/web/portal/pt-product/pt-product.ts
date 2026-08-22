@@ -22,6 +22,7 @@ interface ProductImage {
 }
 
 interface ProductRecommendation {
+  discount: number;
   id: number;
   image: string;
   name: string;
@@ -221,6 +222,23 @@ export class PtProduct implements OnInit, OnDestroy {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
   }
 
+  hasDiscount(product: ProductDetail): boolean {
+    return Number(product.fdDto) > 0;
+  }
+
+  discountedPrice(product: ProductDetail): number {
+    const discount = Math.min(100, Math.max(0, Number(product.fdDto) || 0));
+    return (Number(product.fdPrice) || 0) * (1 - discount / 100);
+  }
+
+  hasRecommendationDiscount(product: ProductRecommendation): boolean {
+    return product.discount > 0;
+  }
+
+  discountedRecommendationPrice(product: ProductRecommendation): number {
+    return product.price * (1 - product.discount / 100);
+  }
+
   formatCommentDate(comment: MdB9f50faa): string {
     const parsedDate = new Date(`${comment.fdDate}T${comment.fdHour || '00:00:00'}`);
     return Number.isNaN(parsedDate.valueOf())
@@ -340,6 +358,7 @@ export class PtProduct implements OnInit, OnDestroy {
             id: entry.idRegister!,
             image: this.toImageSource(entry.fdImage),
             name: entry.fdName,
+            discount: Math.min(100, Math.max(0, Number(entry.fdDto) || 0)),
             price: Number(entry.fdPrice) || 0,
           })),
       );

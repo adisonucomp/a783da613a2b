@@ -56,7 +56,13 @@
         <div class="card purchase-card h-100">
           <div class="card-header">Compra</div>
           <div class="card-body d-flex flex-column">
-            <div class="alert alert-info display-6 fw-semibold text-center mb-4">{{ formatPrice(product.fdPrice) }}</div>
+            <div class="alert alert-info display-6 fw-semibold text-center" [class.text-decoration-line-through]="hasDiscount(product)" [class.text-body-secondary]="hasDiscount(product)" [class.mb-2]="hasDiscount(product)" [class.mb-4]="!hasDiscount(product)">{{ formatPrice(product.fdPrice) }}</div>
+            @if (hasDiscount(product)) {
+              <div class="alert alert-danger display-6 fw-semibold text-center mb-4">
+                {{ formatPrice(discountedPrice(product)) }}
+                <span class="badge text-bg-danger align-middle ms-1">-{{ product.fdDto }}%</span>
+              </div>
+            }
             <div class="alert alert-info text-center mb-4">Stock disponible: <strong>{{ product.fdStock }}</strong></div>
             <div class="purchase-actions mt-auto d-flex gap-3 align-items-end">
               <div class="quantity-control">
@@ -124,11 +130,14 @@
             <div class="card-body p-3">
               <div class="recommendations-scroll">
                 @for (relatedProduct of relatedProducts(); track relatedProduct.id) {
-                  <a class="card recommendation-item text-reset text-decoration-none" [routerLink]="['/portal/product', relatedProduct.id]">
+                  <a class="card recommendation-item text-reset text-decoration-none" [class.border-danger]="hasRecommendationDiscount(relatedProduct)" [class.border-2]="hasRecommendationDiscount(relatedProduct)" [routerLink]="['/portal/product', relatedProduct.id]">
                     <div class="card-body d-flex flex-column">
                       <img class="recommendation-image mb-3" [src]="relatedProduct.image" [alt]="relatedProduct.name" />
                       <h2 class="h6 recommendation-name">{{ relatedProduct.name }}</h2>
-                      <span class="text-primary fw-semibold mt-auto">{{ formatPrice(relatedProduct.price) }}</span>
+                      <span class="fw-semibold mt-auto" [class.text-decoration-line-through]="hasRecommendationDiscount(relatedProduct)" [class.text-body-secondary]="hasRecommendationDiscount(relatedProduct)" [class.text-primary]="!hasRecommendationDiscount(relatedProduct)">{{ formatPrice(relatedProduct.price) }}</span>
+                      @if (hasRecommendationDiscount(relatedProduct)) {
+                        <span class="text-danger fw-semibold">{{ formatPrice(discountedRecommendationPrice(relatedProduct)) }} <span class="badge text-bg-danger">-{{ relatedProduct.discount }}%</span></span>
+                      }
                     </div>
                   </a>
                 }

@@ -34,6 +34,7 @@ interface FilterSection {
 
 interface ProductCard {
   brandDeviceId: number;
+  discount: number;
   graphicCard: string;
   graphicCardId: number;
   graphicCardImage?: string;
@@ -284,6 +285,14 @@ export class PtHome implements OnInit, OnDestroy {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
   }
 
+  hasDiscount(product: ProductCard): boolean {
+    return product.discount > 0;
+  }
+
+  discountedPrice(product: ProductCard): number {
+    return product.price * (1 - product.discount / 100);
+  }
+
   formatCommentDate(comment: MdB9f50faa): string {
     const parsedDate = new Date(`${comment.fdDate}T${comment.fdHour || '00:00:00'}`);
     if (Number.isNaN(parsedDate.valueOf())) {
@@ -386,6 +395,7 @@ export class PtHome implements OnInit, OnDestroy {
         operatingSystem: systems.get(device.operatingSystemId) ?? 'No especificado',
         operatingSystemId: device.operatingSystemId,
         operatingSystemImage: systemImages.get(device.operatingSystemId),
+        discount: Math.min(100, Math.max(0, Number(device.fdDto) || 0)),
         price: Number(device.fdPrice) || 0,
         releaseDate: device.fdRelease,
       }));

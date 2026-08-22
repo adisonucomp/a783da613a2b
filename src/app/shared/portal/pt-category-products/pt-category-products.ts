@@ -14,6 +14,7 @@ export type PortalCategory = 'brand-device' | 'brand-processor' | 'device-data' 
 interface CategoryItem { id: number; image?: string; label: string; }
 interface ProductItem {
   brandDeviceId: number;
+  discount: number;
   graphicCard: string;
   graphicCardId: number;
   graphicCardImage?: string;
@@ -98,6 +99,7 @@ export class PtCategoryProducts implements OnInit {
         id: device.idRegister!,
         name: device.fdName,
         image: device.fdImage,
+        discount: Math.min(100, Math.max(0, Number(device.fdDto) || 0)),
         price: Number(device.fdPrice) || 0,
         brandDeviceId: device.brandDeviceId,
         processor: processors.get(device.typeProcessorId) ?? 'No especificado',
@@ -127,6 +129,14 @@ export class PtCategoryProducts implements OnInit {
 
   formatPrice(price: number): string {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
+  }
+
+  hasDiscount(product: ProductItem): boolean {
+    return product.discount > 0;
+  }
+
+  discountedPrice(product: ProductItem): number {
+    return product.price * (1 - product.discount / 100);
   }
 
   private matchesCategory(product: ProductItem): boolean {
