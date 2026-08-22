@@ -16,6 +16,13 @@ interface ProductImage {
   source: string;
 }
 
+interface ProductRecommendation {
+  id: number;
+  image: string;
+  name: string;
+  price: number;
+}
+
 interface ProductDetail extends MdB8043c54 {
   brandName: string;
   brandImage?: string;
@@ -50,6 +57,7 @@ export class PtProduct implements OnInit, OnDestroy {
   readonly images = signal<ProductImage[]>([]);
   readonly loading = signal(true);
   readonly quantity = signal(1);
+  readonly relatedProducts = signal<ProductRecommendation[]>([]);
   readonly showImageModal = signal(false);
   readonly mainImage = computed(() => this.activeImage() || this.images()[0]?.source || '');
 
@@ -115,16 +123,18 @@ export class PtProduct implements OnInit, OnDestroy {
     this.loading.set(true);
     forkJoin({
       device: this.deviceService.getById(id).pipe(catchError(() => of(null))),
+      devices: this.deviceService.getAll().pipe(catchError(() => of([]))),
       deviceImages: this.deviceImageService.getAll().pipe(catchError(() => of([]))),
       brands: this.brandDeviceService.getAll().pipe(catchError(() => of([]))),
       brandProcessors: this.brandProcessorService.getAll().pipe(catchError(() => of([]))),
       graphics: this.graphicCardService.getAll().pipe(catchError(() => of([]))),
       systems: this.operatingSystemService.getAll().pipe(catchError(() => of([]))),
       processors: this.typeProcessorService.getAll().pipe(catchError(() => of([]))),
-    }).subscribe(({ device, deviceImages, brands, brandProcessors, graphics, systems, processors }) => {
+    }).subscribe(({ device, devices, deviceImages, brands, brandProcessors, graphics, systems, processors }) => {
       if (!device) {
         this.device.set(null);
         this.images.set([]);
+        this.relatedProducts.set([]);
         this.activeImage.set('');
         this.loading.set(false);
         return;
@@ -161,6 +171,17 @@ export class PtProduct implements OnInit, OnDestroy {
 
       this.device.set(detail);
       this.images.set(gallery);
+      this.relatedProducts.set(
+        devices
+          .filter((entry) => entry.idRegister !== id && typeof entry.idRegister === 'number')
+          .slice(0, 20)
+          .map((entry) => ({
+            id: entry.idRegister!,
+            image: this.toImageSource(entry.fdImage),
+            name: entry.fdName,
+            price: Number(entry.fdPrice) || 0,
+          })),
+      );
       this.activeImage.set(gallery[0]?.source ?? '');
       this.quantity.set(1);
       this.loading.set(false);

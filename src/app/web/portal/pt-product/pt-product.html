@@ -98,6 +98,26 @@
       <div class="col-12">
         <div class="card"><div class="card-header">Detalle</div><div class="card-body detail-text">{{ product.fdDetail || 'Sin detalle disponible.' }}</div></div>
       </div>
+      @if (relatedProducts().length) {
+        <div class="col-12">
+          <section class="card recommendations-card">
+            <div class="card-header">Otros también vieron</div>
+            <div class="card-body p-3">
+              <div class="recommendations-scroll">
+                @for (relatedProduct of relatedProducts(); track relatedProduct.id) {
+                  <a class="card recommendation-item text-reset text-decoration-none" [routerLink]="['/portal/product', relatedProduct.id]">
+                    <div class="card-body d-flex flex-column">
+                      <img class="recommendation-image mb-3" [src]="relatedProduct.image" [alt]="relatedProduct.name" />
+                      <h2 class="h6 recommendation-name">{{ relatedProduct.name }}</h2>
+                      <span class="text-primary fw-semibold mt-auto">{{ formatPrice(relatedProduct.price) }}</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          </section>
+        </div>
+      }
     </div>
   } @else {
     <div class="alert alert-warning mb-0">El producto solicitado no está disponible.</div>
