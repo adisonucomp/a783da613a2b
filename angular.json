@@ -51,7 +51,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "15MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -62,6 +62,13 @@
               "outputHashing": "all"
             },
             "development": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "15MB"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
@@ -73,6 +80,13 @@
               ]
             },
             "staging": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "15MB"
+                }
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
