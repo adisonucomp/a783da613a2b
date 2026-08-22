@@ -7,6 +7,7 @@ import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg
 import { SgB2c17bdf } from '../../../services/backend/java/spring/sg-b2c17bdf/sg-b2c17bdf';
 import { SgB4c4c7b1 } from '../../../services/backend/java/spring/sg-b4c4c7b1/sg-b4c4c7b1';
 import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg-b8043c54';
+import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
 import { SgD148f4b4 } from '../../../services/backend/java/spring/sg-d148f4b4/sg-d148f4b4';
 
@@ -17,9 +18,13 @@ interface ProductImage {
 
 interface ProductDetail extends MdB8043c54 {
   brandName: string;
+  brandImage?: string;
   graphicCardName: string;
+  graphicCardImage?: string;
   operatingSystemName: string;
+  operatingSystemImage?: string;
   processorName: string;
+  processorImage?: string;
 }
 
 @Component({
@@ -35,6 +40,7 @@ export class PtProduct implements OnInit, OnDestroy {
   private readonly deviceService = inject(SgB8043c54);
   private readonly deviceImageService = inject(SgD148f4b4);
   private readonly brandDeviceService = inject(SgB4c4c7b1);
+  private readonly brandProcessorService = inject(SgC98391c6);
   private readonly graphicCardService = inject(SgA6ac2e09);
   private readonly operatingSystemService = inject(SgD0112a5a);
   private readonly typeProcessorService = inject(SgB2c17bdf);
@@ -93,6 +99,10 @@ export class PtProduct implements OnInit, OnDestroy {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
   }
 
+  relatedImageSource(image?: string): string {
+    return image ? this.toImageSource(image) : '';
+  }
+
   formatDate(date: string): string {
     if (!date) {
       return 'No especificada';
@@ -107,10 +117,11 @@ export class PtProduct implements OnInit, OnDestroy {
       device: this.deviceService.getById(id).pipe(catchError(() => of(null))),
       deviceImages: this.deviceImageService.getAll().pipe(catchError(() => of([]))),
       brands: this.brandDeviceService.getAll().pipe(catchError(() => of([]))),
+      brandProcessors: this.brandProcessorService.getAll().pipe(catchError(() => of([]))),
       graphics: this.graphicCardService.getAll().pipe(catchError(() => of([]))),
       systems: this.operatingSystemService.getAll().pipe(catchError(() => of([]))),
       processors: this.typeProcessorService.getAll().pipe(catchError(() => of([]))),
-    }).subscribe(({ device, deviceImages, brands, graphics, systems, processors }) => {
+    }).subscribe(({ device, deviceImages, brands, brandProcessors, graphics, systems, processors }) => {
       if (!device) {
         this.device.set(null);
         this.images.set([]);
@@ -122,12 +133,24 @@ export class PtProduct implements OnInit, OnDestroy {
       const namesById = (items: Array<{ idRegister?: number; fdName?: string; name?: string }>) => new Map(
         items.map((item) => [item.idRegister, item.name ?? item.fdName ?? 'No especificado']),
       );
+      const imagesById = (items: Array<{ fdImage?: string; idRegister?: number }>) => new Map(
+        items.map((item) => [item.idRegister, item.fdImage]),
+      );
+      const processor = processors.find((item) => item.idRegister === device.typeProcessorId);
+      const brandImages = imagesById(brands);
+      const processorImages = imagesById(brandProcessors);
+      const graphicImages = imagesById(graphics);
+      const systemImages = imagesById(systems);
       const detail: ProductDetail = {
         ...device,
         brandName: namesById(brands).get(device.brandDeviceId) ?? 'No especificada',
+        brandImage: brandImages.get(device.brandDeviceId),
         graphicCardName: namesById(graphics).get(device.graphicCardId) ?? 'No especificada',
+        graphicCardImage: graphicImages.get(device.graphicCardId),
         operatingSystemName: namesById(systems).get(device.operatingSystemId) ?? 'No especificado',
+        operatingSystemImage: systemImages.get(device.operatingSystemId),
         processorName: namesById(processors).get(device.typeProcessorId) ?? 'No especificado',
+        processorImage: processorImages.get(processor?.brandProcessorId),
       };
       const gallery = [
         { id: 0, source: this.toImageSource(device.fdImage) },

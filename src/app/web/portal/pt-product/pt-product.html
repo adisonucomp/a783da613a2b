@@ -75,11 +75,23 @@
       <div class="col-12 col-lg-6">
         <div class="card h-100"><div class="card-header">Especificaciones</div><div class="card-body p-0">
           <table class="table table-sm mb-0 detail-table"><tbody>
-            <tr><th>Fecha de lanzamiento</th><td>{{ formatDate(product.fdRelease) }}</td></tr>
-            <tr><th>Marca del dispositivo</th><td>{{ product.brandName }}</td></tr>
-            <tr><th>Tarjeta gráfica</th><td>{{ product.graphicCardName }}</td></tr>
-            <tr><th>Sistema operativo</th><td>{{ product.operatingSystemName }}</td></tr>
-            <tr><th>Tipo de procesador</th><td>{{ product.processorName }}</td></tr>
+            <tr><th>Fecha de lanzamiento</th><td>{{ formatDate(product.fdRelease) }}</td><td></td></tr>
+            <tr>
+              <th>Marca del dispositivo</th><td>{{ product.brandName }}</td>
+              <td class="related-image-cell">@if (product.brandImage) { <img class="related-image" [src]="relatedImageSource(product.brandImage)" [alt]="product.brandName" /> } @else { <i class="bi bi-bookmark-star text-body-secondary"></i> }</td>
+            </tr>
+            <tr>
+              <th>Tarjeta gráfica</th><td>{{ product.graphicCardName }}</td>
+              <td class="related-image-cell">@if (product.graphicCardImage) { <img class="related-image" [src]="relatedImageSource(product.graphicCardImage)" [alt]="product.graphicCardName" /> } @else { <i class="bi bi-gpu-card text-body-secondary"></i> }</td>
+            </tr>
+            <tr>
+              <th>Sistema operativo</th><td>{{ product.operatingSystemName }}</td>
+              <td class="related-image-cell">@if (product.operatingSystemImage) { <img class="related-image" [src]="relatedImageSource(product.operatingSystemImage)" [alt]="product.operatingSystemName" /> } @else { <i class="bi bi-windows text-body-secondary"></i> }</td>
+            </tr>
+            <tr>
+              <th>Tipo de procesador</th><td>{{ product.processorName }}</td>
+              <td class="related-image-cell">@if (product.processorImage) { <img class="related-image" [src]="relatedImageSource(product.processorImage)" [alt]="product.processorName" /> } @else { <i class="bi bi-cpu text-body-secondary"></i> }</td>
+            </tr>
           </tbody></table>
         </div></div>
       </div>

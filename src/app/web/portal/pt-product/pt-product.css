@@ -11,6 +11,8 @@
 .purchase-actions .btn { min-height: 2.4rem; }
 .detail-table th { width: 42%; }
 .detail-table td, .detail-table th { padding: .65rem 1rem; vertical-align: middle; }
+.related-image-cell { text-align: center; width: 4.25rem; }
+.related-image { height: 2rem; max-width: 3.5rem; object-fit: contain; }
 .detail-text { overflow-wrap: anywhere; white-space: pre-wrap; }
 .modal { z-index: 1060; }
 .modal-main-image-card .card-body { min-height: 16rem; }
