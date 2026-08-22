@@ -103,6 +103,7 @@ export class PtHome implements OnInit, OnDestroy {
   readonly page = signal(1);
   readonly pageSize = 25;
   readonly products = signal<ProductCard[]>([]);
+  readonly productRatings = signal<Record<number, DeviceRating>>({});
   readonly productComments = signal<ProductComment[]>([]);
   readonly ratingLevels = [5, 4, 3, 2, 1];
   readonly ratingStars = [1, 2, 3, 4, 5];
@@ -305,6 +306,10 @@ export class PtHome implements OnInit, OnDestroy {
     return total > 0 ? (this.ratingCount(rating) / total) * 100 : 0;
   }
 
+  productRating(productId: number): DeviceRating {
+    return this.productRatings()[productId] ?? EMPTY_DEVICE_RATING;
+  }
+
   productImage(image: string): string {
     if (image.startsWith('data:image/')) {
       return image;
@@ -333,7 +338,12 @@ export class PtHome implements OnInit, OnDestroy {
       this.setOptions('type-processor', this.toFilterOptions(typeProcessor, (type) => processorBrandImages.get(type.brandProcessorId)));
       this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
       this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
-      this.products.set(this.toProducts(devices, typeProcessor, graphicCard, operatingSystem, brandProcessor));
+      const products = this.toProducts(devices, typeProcessor, graphicCard, operatingSystem, brandProcessor);
+      this.products.set(products);
+      this.productRatings.set({});
+      forkJoin(products.map((product) => this.commentService.getDeviceRating(product.id).pipe(catchError(() => of(EMPTY_DEVICE_RATING))))).subscribe((ratings) => {
+        this.productRatings.set(Object.fromEntries(products.map((product, index) => [product.id, ratings[index]])));
+      });
       this.page.set(1);
       this.loadingFilters.set(false);
       this.loadingProducts.set(false);

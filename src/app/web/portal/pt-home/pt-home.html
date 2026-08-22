@@ -52,7 +52,14 @@
             @for (product of visibleProducts(); track product.id) {
               <article class="card product-card mb-3">
                 <div class="card-body">
-                  <h2 class="h5 product-title mb-3">{{ product.name }}</h2>
+                  <div class="product-card-heading d-flex align-items-center justify-content-between gap-3 mb-3">
+                    <h2 class="h5 product-title mb-0">{{ product.name }}</h2>
+                    <div class="product-rating flex-shrink-0 text-end" [attr.aria-label]="productRating(product.id).averageRating + ' de 5 estrellas, ' + productRating(product.id).opinionCount + ' opiniones'">
+                      <span class="fw-semibold me-1">{{ formatAverageRating(productRating(product.id).averageRating) }}</span>
+                      <span class="comment-rating me-1">@for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= productRating(product.id).averageRating" [class.bi-star]="star > productRating(product.id).averageRating"></i> }</span>
+                      <small class="text-body-secondary">({{ productRating(product.id).opinionCount }})</small>
+                    </div>
+                  </div>
                   <div class="row g-3 align-items-center">
                     <div class="col-12 col-md-4 text-center">
                       <img class="product-image" [src]="productImage(product.image)" [alt]="product.name" />

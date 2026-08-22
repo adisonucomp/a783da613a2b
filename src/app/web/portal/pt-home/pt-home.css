@@ -12,6 +12,8 @@
 .filter-option-placeholder { align-items: center; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); color: var(--bs-secondary-color); display: inline-flex; justify-content: center; }
 .product-card:last-child { margin-bottom: 0 !important; }
 .product-title { overflow-wrap: anywhere; }
+.product-card-heading .product-title { min-width: 0; }
+.product-rating { font-size: .9rem; }
 .product-image { height: 12rem; max-width: 100%; object-fit: contain; }
 .product-features th { width: 42%; }
 .product-features td, .product-features th { vertical-align: middle; }
