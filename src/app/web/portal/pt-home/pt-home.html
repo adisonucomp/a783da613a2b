@@ -136,14 +136,18 @@
             } @else {
               @for (comment of productComments(); track comment.idRegister) {
                 <article class="comment-item">
-                  <div class="d-flex justify-content-between gap-3 mb-2">
-                    <div>
-                      <h3 class="h6 mb-1"><i class="bi bi-person-circle me-1"></i>{{ comment.userName }}</h3>
+                  <div class="row g-2 mb-2">
+                    <div class="col-12">
+                      <h3 class="h6 mb-0"><i class="bi bi-person-circle me-1"></i>{{ comment.userName }}</h3>
+                    </div>
+                    <div class="col-6">
                       <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
                         @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
                       </span>
                     </div>
-                    <small class="text-body-secondary text-end">{{ formatCommentDate(comment) }}</small>
+                    <div class="col-6 text-end">
+                      <small class="text-body-secondary">{{ formatCommentDate(comment) }}</small>
+                    </div>
                   </div>
                   <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
                 </article>
