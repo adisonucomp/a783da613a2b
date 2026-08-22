@@ -27,6 +27,7 @@ export type WgRelation =
 export interface WgCrudField {
   createOnly?: boolean;
   fullWidth?: boolean;
+  hidden?: boolean;
   imageExtensionKey?: string;
   label: string;
   key: string;
@@ -376,7 +377,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   }
 
   isFieldVisible(field: WgCrudField): boolean {
-    return !this.editing() || !field.createOnly;
+    return !field.hidden && (!this.editing() || !field.createOnly);
   }
 
   hasMultipleVisibleFields(): boolean {
@@ -482,7 +483,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   private loadRelationOptions(): void {
     const relations = new Set(
       this.fields
-        .filter((field) => field.relation && this.isFieldVisible(field))
+        .filter((field) => field.relation)
         .map((field) => field.relation as WgRelation),
     );
 

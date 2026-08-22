@@ -105,7 +105,8 @@ export const deviceImageConfig: WgCrudConfig = {
   title: 'Imágenes de Dispositivos',
   fields: [
     { key: 'deviceId', label: 'Dispositivo', relation: 'device-data' },
-    { key: 'imageExtId', label: 'Extensión', relation: 'image-ext', readonly: true },
+    { key: 'fdOrder', label: 'Orden', type: 'number' },
+    { key: 'imageExtId', label: 'Extensión', relation: 'image-ext', readonly: true, hidden: true },
     { key: 'fdData', label: 'Imagen', type: 'image', fullWidth: true, imageExtensionKey: 'imageExtId' },
   ],
 };
