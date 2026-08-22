@@ -5,7 +5,14 @@
     <a class="back-link d-inline-block mb-3" routerLink="/portal/home"><i class="bi bi-chevron-left"></i> Volver a productos</a>
     <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
       <h1 class="h3 mb-0">{{ product.fdName }}</h1>
-      <button class="btn btn-outline-primary flex-shrink-0" type="button" (click)="openComments()"><i class="bi bi-chat-left-text me-1"></i>Comentarios</button>
+      <div class="d-flex align-items-center gap-2 flex-shrink-0">
+        <div class="product-rating-summary text-end" [attr.aria-label]="deviceRating().averageRating + ' de 5 estrellas, ' + deviceRating().opinionCount + ' opiniones'">
+          <span class="fw-semibold me-1">{{ formatAverageRating(deviceRating().averageRating) }}</span>
+          <span class="comment-rating me-1">@for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= deviceRating().averageRating" [class.bi-star]="star > deviceRating().averageRating"></i> }</span>
+          <small class="text-body-secondary">({{ deviceRating().opinionCount }})</small>
+        </div>
+        <button class="btn btn-outline-primary" type="button" (click)="openComments()"><i class="bi bi-chat-left-text me-1"></i>Comentarios</button>
+      </div>
     </div>
 
     <div class="row g-4 align-items-stretch">

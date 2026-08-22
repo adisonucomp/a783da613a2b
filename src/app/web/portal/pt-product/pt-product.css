@@ -9,6 +9,7 @@
 .main-image { height: 29rem; max-width: 100%; object-fit: contain; width: 100%; }
 .quantity-control { width: 6.25rem; }
 .purchase-actions .btn { min-height: 2.4rem; }
+.product-rating-summary { white-space: nowrap; }
 .detail-table th { width: 42%; }
 .detail-table td, .detail-table th { padding: .65rem 1rem; vertical-align: middle; }
 .related-image-cell { text-align: center; width: 4.25rem; }

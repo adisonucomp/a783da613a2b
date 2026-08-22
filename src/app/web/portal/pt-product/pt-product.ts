@@ -287,9 +287,10 @@ export class PtProduct implements OnInit, OnDestroy {
       brands: this.brandDeviceService.getAll().pipe(catchError(() => of([]))),
       brandProcessors: this.brandProcessorService.getAll().pipe(catchError(() => of([]))),
       graphics: this.graphicCardService.getAll().pipe(catchError(() => of([]))),
+      rating: this.commentService.getDeviceRating(id).pipe(catchError(() => of(EMPTY_DEVICE_RATING))),
       systems: this.operatingSystemService.getAll().pipe(catchError(() => of([]))),
       processors: this.typeProcessorService.getAll().pipe(catchError(() => of([]))),
-    }).subscribe(({ device, devices, deviceImages, brands, brandProcessors, graphics, systems, processors }) => {
+    }).subscribe(({ device, devices, deviceImages, brands, brandProcessors, graphics, rating, systems, processors }) => {
       if (!device) {
         this.device.set(null);
         this.images.set([]);
@@ -329,6 +330,7 @@ export class PtProduct implements OnInit, OnDestroy {
       ];
 
       this.device.set(detail);
+      this.deviceRating.set(rating);
       this.images.set(gallery);
       this.relatedProducts.set(
         devices
