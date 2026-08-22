@@ -37,7 +37,7 @@ interface ProductItem {
 })
 export class PtCategoryProducts implements OnInit {
   @Input({ required: true }) category!: PortalCategory;
-  @Input() showRelatedImages = false;
+  @Input() showRelatedImages = true;
   @Input({ required: true }) title = '';
 
   private readonly platformId = inject(PLATFORM_ID);
