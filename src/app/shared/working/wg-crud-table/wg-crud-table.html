@@ -89,7 +89,12 @@
             <div class="row">
             @for (field of fields; track field.key) {
               @if (isFieldVisible(field)) {
-                <div class="col-12 mb-3" [class.col-md-6]="hasMultipleVisibleFields() && !field.fullWidth">
+                <div
+                  class="col-12 mb-3"
+                  [class.col-md-4]="field.colMd === 4"
+                  [class.col-md-6]="field.colMd === 6 || (hasMultipleVisibleFields() && !field.fullWidth && !field.colMd)"
+                  [class.col-md-12]="field.colMd === 12"
+                >
                   <label class="form-label" [for]="'field-' + field.key">
                     {{ field.label }}@if (field.required !== false) { <span class="text-danger" aria-hidden="true">*</span> }
                   </label>
@@ -143,7 +148,15 @@
                       <small class="d-block text-body-secondary mt-2">Archivo: {{ imageFileName(field) }}</small>
                     }
                   } @else {
-                    <input class="form-control" [id]="'field-' + field.key" [type]="field.type ?? 'text'" [formControlName]="field.key" />
+                    <input
+                      class="form-control"
+                      [id]="'field-' + field.key"
+                      [type]="field.type ?? 'text'"
+                      [attr.min]="field.min ?? null"
+                      [attr.max]="field.max ?? null"
+                      [attr.step]="field.step ?? null"
+                      [formControlName]="field.key"
+                    />
                   }
                 </div>
                 @if (field.type === 'image' && imagePreview(field)) {

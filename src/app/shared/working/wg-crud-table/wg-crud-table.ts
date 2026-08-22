@@ -26,16 +26,20 @@ export type WgRelation =
   | 'user-data';
 
 export interface WgCrudField {
+  colMd?: 4 | 6 | 12;
   createOnly?: boolean;
   fullWidth?: boolean;
   hidden?: boolean;
   imageExtensionKey?: string;
   label: string;
   key: string;
+  max?: number;
+  min?: number;
   relation?: WgRelation;
   readonly?: boolean;
   required?: boolean;
   rows?: number;
+  step?: number;
   tableDisplay?: 'detail';
   type?: 'date' | 'email' | 'image' | 'number' | 'password' | 'text' | 'textarea' | 'time';
 }
@@ -559,7 +563,14 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
     for (const field of this.fields.filter((item) => !this.editing() || !item.createOnly)) {
       const value = record[field.key] ?? '';
-      controls[field.key] = this.formBuilder.control(value, field.required === false ? [] : [Validators.required]);
+      const validators = field.required === false ? [] : [Validators.required];
+      if (field.min !== undefined) {
+        validators.push(Validators.min(field.min));
+      }
+      if (field.max !== undefined) {
+        validators.push(Validators.max(field.max));
+      }
+      controls[field.key] = this.formBuilder.control(value, validators);
     }
 
     this.form.reset();

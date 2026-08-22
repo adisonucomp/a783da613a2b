@@ -2,6 +2,7 @@ export interface MdB8043c54 {
   idRegister?: number;
   brandDeviceId: number;
   fdCode: string;
+  fdDiscount: number;
   fdDetail: string;
   fdImage: string;
   fdName: string;

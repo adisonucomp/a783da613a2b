@@ -55,8 +55,9 @@ export const deviceDataConfig: WgCrudConfig = {
   fields: [
     { key: 'fdCode', label: 'Código' },
     { key: 'fdName', label: 'Nombre' },
-    { key: 'fdPrice', label: 'Precio', type: 'number' },
-    { key: 'fdStock', label: 'Stock', type: 'number' },
+    { key: 'fdPrice', label: 'Precio', type: 'number', colMd: 4 },
+    { key: 'fdStock', label: 'Stock', type: 'number', colMd: 4 },
+    { key: 'fdDiscount', label: 'Descuento', type: 'number', min: 0, max: 100, step: 1, colMd: 4 },
     { key: 'fdRam', label: 'Memoria RAM' },
     { key: 'fdStorage', label: 'Almacenamiento' },
     { key: 'fdScreenSize', label: 'Tamaño de Pantalla' },
