@@ -34,6 +34,7 @@ export interface WgCrudField {
   relation?: WgRelation;
   readonly?: boolean;
   required?: boolean;
+  rows?: number;
   tableDisplay?: 'detail';
   type?: 'date' | 'email' | 'image' | 'number' | 'password' | 'text' | 'textarea' | 'time';
 }

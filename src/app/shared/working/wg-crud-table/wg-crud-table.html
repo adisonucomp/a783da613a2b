@@ -117,7 +117,7 @@
                       }
                     </div>
                   } @else if (field.type === 'textarea') {
-                    <textarea class="form-control" [id]="'field-' + field.key" rows="3" [formControlName]="field.key"></textarea>
+                    <textarea class="form-control" [id]="'field-' + field.key" [attr.rows]="field.rows ?? 3" [formControlName]="field.key"></textarea>
                   } @else if (field.type === 'image') {
                     <input
                       class="visually-hidden"
