@@ -1,4 +1,6 @@
 :host { display: block; flex: 1 1 auto; min-width: 0; }
+.breadcrumb { flex-wrap: nowrap; }
+.breadcrumb-item.active { max-width: 24rem; }
 .back-link { color: var(--bs-link-color); text-decoration: none; }
 .gallery-card, .main-image-card, .purchase-card { min-height: 31rem; }
 .gallery-scroll { display: flex; flex-direction: column; gap: .75rem; max-height: 31rem; overflow-y: auto; }
