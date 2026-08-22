@@ -111,14 +111,19 @@
         <div class="modal-body">
           @if (commentFormOpen()) {
             <p class="fw-semibold mb-3">{{ commentsProductName() }}</p>
-            <form id="comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+            <form id="comment-form" class="comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
               <div class="mb-3">
                 <label class="form-label" for="fdRating">Calificación <span class="text-danger">*</span></label>
-                <select id="fdRating" class="form-select" formControlName="fdRating">
-                  @for (rating of ratingStars; track rating) { <option [value]="rating">{{ rating }} estrella{{ rating > 1 ? 's' : '' }}</option> }
-                </select>
+                <div id="fdRating" class="rating-input" role="radiogroup" aria-label="Calificación">
+                  @for (rating of ratingStars; track rating) {
+                    <button class="rating-star" type="button" [class.active]="rating <= commentForm.controls.fdRating.value" [attr.aria-label]="rating + ' estrellas'" (click)="setCommentRating(rating)">
+                      <i class="bi" [class.bi-star-fill]="rating <= commentForm.controls.fdRating.value" [class.bi-star]="rating > commentForm.controls.fdRating.value"></i>
+                    </button>
+                  }
+                  <span class="small text-body-secondary ms-2">{{ commentForm.controls.fdRating.value }} de 5</span>
+                </div>
               </div>
-              <div class="mb-0">
+              <div class="comment-content-group mb-0">
                 <label class="form-label" for="fdContent">Opinión <span class="text-danger">*</span></label>
                 <textarea id="fdContent" class="form-control" rows="7" maxlength="2000" formControlName="fdContent" placeholder="Escriba su opinión sobre el producto..."></textarea>
                 @if (commentForm.controls.fdContent.touched && commentForm.controls.fdContent.invalid) { <div class="invalid-feedback d-block">La opinión es obligatoria.</div> }

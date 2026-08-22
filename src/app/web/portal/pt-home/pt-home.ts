@@ -167,6 +167,11 @@ export class PtHome implements OnInit, OnDestroy {
     this.commentForm.reset({ fdContent: '', fdRating: 5 });
   }
 
+  setCommentRating(rating: number): void {
+    this.commentForm.controls.fdRating.setValue(rating);
+    this.commentForm.controls.fdRating.markAsTouched();
+  }
+
   submitComment(): void {
     const deviceId = this.commentsDeviceId();
     const userId = this.commentAuthorId();

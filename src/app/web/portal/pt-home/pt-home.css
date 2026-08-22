@@ -21,6 +21,14 @@
 .comments-modal { z-index: 1060; }
 .comments-modal-dialog { height: calc(100dvh - 1rem); margin: .5rem .5rem .5rem auto; max-width: min(calc(100vw - 1rem), 28rem); }
 .comments-modal .modal-content { border-radius: var(--bs-border-radius); }
+.comments-modal .modal-body:has(.comment-form) { display: flex; flex-direction: column; min-height: 0; }
+.comment-form { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.rating-input { align-items: center; display: flex; }
+.rating-star { background: transparent; border: 0; color: var(--bs-secondary-color); font-size: 1.65rem; line-height: 1; padding: 0 .12rem; }
+.rating-star.active, .rating-star:hover { color: #ffc107; }
+.rating-star:focus-visible { border-radius: var(--bs-border-radius); outline: 2px solid var(--bs-primary); outline-offset: 2px; }
+.comment-content-group { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.comment-content-group textarea { flex: 1; min-height: 12rem; resize: vertical; }
 .comment-item:not(:last-child) { border-bottom: 1px solid var(--bs-border-color); }
 .comment-rating { color: #ffc107; letter-spacing: .1rem; white-space: nowrap; }
 .comment-content { overflow-wrap: anywhere; white-space: pre-wrap; }
