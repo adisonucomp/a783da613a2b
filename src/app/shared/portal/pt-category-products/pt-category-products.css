@@ -1,4 +1,5 @@
-:host { display: block; flex: 1 1 auto; }
+:host { display: block; flex: 1 1 100%; min-width: 0; width: 100%; }
+.portal-category { margin-inline: auto; width: 100%; }
 .category-item-card { background: var(--bs-body-bg); color: var(--bs-body-color); transition: border-color .15s ease, transform .15s ease; }
 .category-item-card:hover { border-color: var(--bs-primary); transform: translateY(-2px); }
 .category-item-image, .category-item-placeholder { height: 5rem; width: 5rem; }

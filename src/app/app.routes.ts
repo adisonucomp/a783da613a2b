@@ -35,11 +35,11 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: PtHome }, // Componente Inicio
       { path: 'register', component: PtRegister, canActivate: [guestGuard] }, // Componente Registro
-      { path: 'a6ac2e09', component: PtA6ac2e09 }, // Componente graphic_card
-      { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device
-      { path: 'b8043c54', component: PtB8043c54 }, // Componente device_data
-      { path: 'c98391c6', component: PtC98391c6 }, // Componente brand_processor
-      { path: 'd0112a5a', component: PtD0112a5a }, // Componente operating_system
+      { path: 'a6ac2e09', component: PtA6ac2e09 }, // Componente graphic_card - Tarjetas Gráficas
+      { path: 'b4c4c7b1', component: PtB4c4c7b1 }, // Componente brand_device - Marcas de Dispositivos
+      { path: 'b8043c54', component: PtB8043c54 }, // Componente device_data - Dispositivos
+      { path: 'c98391c6', component: PtC98391c6 }, // Componente brand_processor - Marcas de Procesadores
+      { path: 'd0112a5a', component: PtD0112a5a }, // Componente operating_system - Sistemas Operativos
       { path: 'product/:id', component: PtProduct }, // Componente detalle de producto
     ],
   },
@@ -52,17 +52,17 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       { path: 'dashboard', component: WgDashboard }, // Componente Panel de Control
 
-      { path: 'a6ac2e09', component: MdA6ac2e09 }, // Modulo graphic_card
-      { path: 'b22b6431', component: MdB22b6431 }, // Modulo image_ext
-      { path: 'b2412519', component: MdB2412519 }, // Modulo user_data
-      { path: 'b2c17bdf', component: MdB2c17bdf }, // Modulo type_processor
-      { path: 'b4c4c7b1', component: MdB4c4c7b1 }, // Modulo brand_device
-      { path: 'b8043c54', component: MdB8043c54 }, // Modulo device_data
-      { path: 'b9f50faa', component: MdB9f50faa }, // Modulo comment
-      { path: 'c0de7562', component: MdC0de7562 }, // Modulo role_data
-      { path: 'c98391c6', component: MdC98391c6 }, // Modulo brand_processor
-      { path: 'd0112a5a', component: MdD0112a5a }, // Modulo operating_system
-      { path: 'd148f4b4', component: MdD148f4b4 }, // Modulo device_image
+      { path: 'a6ac2e09', component: MdA6ac2e09 }, // Modulo graphic_card - Tarjetas Gráficas
+      { path: 'b22b6431', component: MdB22b6431 }, // Modulo image_ext - Imágenes
+      { path: 'b2412519', component: MdB2412519 }, // Modulo user_data - Datos de Usuario
+      { path: 'b2c17bdf', component: MdB2c17bdf }, // Modulo type_processor - Tipos de Procesadores
+      { path: 'b4c4c7b1', component: MdB4c4c7b1 }, // Modulo brand_device - Marcas de Dispositivos
+      { path: 'b8043c54', component: MdB8043c54 }, // Modulo device_data - Dispositivos
+      { path: 'b9f50faa', component: MdB9f50faa }, // Modulo comment - Comentarios
+      { path: 'c0de7562', component: MdC0de7562 }, // Modulo role_data - Roles de Usuario
+      { path: 'c98391c6', component: MdC98391c6 }, // Modulo brand_processor - Marcas de Procesadores
+      { path: 'd0112a5a', component: MdD0112a5a }, // Modulo operating_system - Sistemas Operativos
+      { path: 'd148f4b4', component: MdD148f4b4 }, // Modulo device_image - Imágenes de Dispositivos
     ],
   },
 

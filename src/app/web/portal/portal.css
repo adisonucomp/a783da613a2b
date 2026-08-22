@@ -15,6 +15,14 @@
   flex: 1;
 }
 
+/* Garantiza que cada vista cargada por el router ocupe toda la fila. */
+.portal-page > router-outlet + * {
+  display: block;
+  flex: 1 1 100%;
+  min-width: 0;
+  width: 100%;
+}
+
 :host > app-pt-footer {
   display: block;
   flex: 0 0 auto;
