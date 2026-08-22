@@ -47,6 +47,15 @@ interface WgCrudService {
   changePassword?: (payload: { fdPassd: string; idRegister: number }) => Observable<unknown>;
 }
 
+interface DataTableInstance {
+  destroy: () => void;
+  rows: () => {
+    invalidate: (source?: 'auto' | 'data' | 'dom') => {
+      draw: (resetPaging?: boolean) => void;
+    };
+  };
+}
+
 type WgRecord = Record<string, unknown> & { idRegister?: number };
 
 interface RelationOption {
@@ -81,7 +90,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
     'type-processor': inject(SgB2c17bdf),
     'user-data': inject(SgB2412519),
   };
-  private dataTable?: { destroy: () => void };
+  private dataTable?: DataTableInstance;
   private loadId = 0;
   private tableIsReady = false;
   private selectedId?: number;
@@ -496,6 +505,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
             [relation]: this.toRelationOptions(relation, items),
           }));
           this.syncRelationLabels(relation);
+          this.refreshDataTableSearchIndex();
         },
         error: () => {
           this.relationOptions.update((options) => ({ ...options, [relation]: [] }));
@@ -654,6 +664,14 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   private destroyTable(): void {
     this.dataTable?.destroy();
     this.dataTable = undefined;
+  }
+
+  /** Relee el texto renderizado por Angular (en particular los nombres de relaciones)
+   * para que el buscador de DataTables no conserve los identificadores iniciales. */
+  private refreshDataTableSearchIndex(): void {
+    setTimeout(() => {
+      this.dataTable?.rows().invalidate('dom').draw(false);
+    });
   }
 
   private showProcessing(text?: string): void {
