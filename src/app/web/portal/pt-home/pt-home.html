@@ -105,27 +105,60 @@
     <div class="modal-dialog modal-dialog-scrollable comments-modal-dialog" role="document">
       <div class="modal-content h-100">
         <div class="modal-header bg-primary text-white">
-          <h2 class="modal-title fs-5 mb-0">Comentarios</h2>
+          <h2 class="modal-title fs-5 mb-0">{{ commentFormOpen() ? 'Escribir opinión' : 'Comentarios' }}</h2>
           <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeComments()"></button>
         </div>
         <div class="modal-body">
-          <p class="fw-semibold mb-3">{{ commentsProductName() }}</p>
-          @if (commentsLoading()) {
-            <p class="text-body-secondary mb-0">Cargando comentarios...</p>
+          @if (commentFormOpen()) {
+            <p class="fw-semibold mb-3">{{ commentsProductName() }}</p>
+            <form id="comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+              <div class="mb-3">
+                <label class="form-label" for="fdRating">Calificación <span class="text-danger">*</span></label>
+                <select id="fdRating" class="form-select" formControlName="fdRating">
+                  @for (rating of ratingStars; track rating) { <option [value]="rating">{{ rating }} estrella{{ rating > 1 ? 's' : '' }}</option> }
+                </select>
+              </div>
+              <div class="mb-0">
+                <label class="form-label" for="fdContent">Opinión <span class="text-danger">*</span></label>
+                <textarea id="fdContent" class="form-control" rows="7" maxlength="2000" formControlName="fdContent" placeholder="Escriba su opinión sobre el producto..."></textarea>
+                @if (commentForm.controls.fdContent.touched && commentForm.controls.fdContent.invalid) { <div class="invalid-feedback d-block">La opinión es obligatoria.</div> }
+              </div>
+            </form>
           } @else {
-            @for (comment of productComments(); track comment.idRegister) {
-              <article class="comment-item py-3">
-                <div class="d-flex justify-content-between gap-3 mb-2">
-                  <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
-                    @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
-                  </span>
-                  <small class="text-body-secondary text-end">{{ formatCommentDate(comment) }}</small>
-                </div>
-                <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
-              </article>
-            } @empty {
-              <p class="text-body-secondary mb-0">Este producto aún no tiene comentarios.</p>
+            <p class="fw-semibold mb-3">{{ commentsProductName() }}</p>
+            @if (commentsLoading()) {
+              <p class="text-body-secondary mb-0">Cargando comentarios...</p>
+            } @else {
+              @for (comment of productComments(); track comment.idRegister) {
+                <article class="comment-item py-3">
+                  <div class="d-flex justify-content-between gap-3 mb-2">
+                    <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
+                      @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
+                    </span>
+                    <small class="text-body-secondary text-end">{{ formatCommentDate(comment) }}</small>
+                  </div>
+                  <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
+                </article>
+              } @empty {
+                <p class="text-body-secondary mb-0">Este producto aún no tiene comentarios.</p>
+              }
             }
+          }
+        </div>
+        <div class="modal-footer">
+          @if (commentFormOpen()) {
+            <button class="btn btn-outline-secondary" type="button" [disabled]="commentSubmitting()" (click)="cancelCommentForm()">Volver</button>
+            <button class="btn btn-primary" type="submit" form="comment-form" [disabled]="commentSubmitting()">
+              @if (commentSubmitting()) { <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Publicando... } @else { Publicar opinión }
+            </button>
+          } @else {
+            <button class="btn btn-outline-secondary" type="button" (click)="closeComments()">Cerrar</button>
+            <div>
+              <button class="btn btn-primary" type="button" [disabled]="!authSession.isAuthenticated() || commentAuthorLoading()" (click)="openCommentForm()">
+                @if (commentAuthorLoading()) { <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Preparando... } @else { Escribir opinión }
+              </button>
+              @if (!authSession.isAuthenticated()) { <small class="d-block text-body-secondary mt-1">Inicie sesión para escribir una opinión.</small> }
+            </div>
           }
         </div>
       </div>
