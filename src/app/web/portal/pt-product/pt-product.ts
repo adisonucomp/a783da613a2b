@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
@@ -15,6 +15,7 @@ import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
 import { SgD148f4b4 } from '../../../services/backend/java/spring/sg-d148f4b4/sg-d148f4b4';
 import { AuthSession } from '../../../services/core/auth-session/auth-session';
+import { CommentSync } from '../../../services/core/comment-sync/comment-sync';
 
 interface ProductImage {
   id: number;
@@ -74,6 +75,7 @@ export class PtProduct implements OnInit, OnDestroy {
   private readonly typeProcessorService = inject(SgB2c17bdf);
   private readonly commentService = inject(SgB9f50faa);
   private readonly userService = inject(SgB2412519);
+  private readonly commentSync = inject(CommentSync);
   readonly authSession = inject(AuthSession);
 
   readonly activeImage = signal('');
@@ -98,6 +100,13 @@ export class PtProduct implements OnInit, OnDestroy {
     fdRating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
   });
   readonly mainImage = computed(() => this.activeImage() || this.images()[0]?.source || '');
+
+  constructor() {
+    effect(() => {
+      const event = this.commentSync.latest();
+      if (event) this.synchronizeCommentData(event.deviceId);
+    });
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -208,6 +217,7 @@ export class PtProduct implements OnInit, OnDestroy {
       next: () => {
         this.cancelCommentForm();
         this.loadComments(deviceId);
+        this.commentSync.publish(deviceId);
       },
     });
   }
@@ -293,6 +303,19 @@ export class PtProduct implements OnInit, OnDestroy {
       );
       this.deviceRating.set(rating);
       this.commentsLoading.set(false);
+    });
+  }
+
+  private synchronizeCommentData(deviceId: number): void {
+    if (this.device()?.idRegister !== deviceId) return;
+
+    if (this.commentsModalOpen()) {
+      this.loadComments(deviceId);
+      return;
+    }
+
+    this.commentService.getDeviceRating(deviceId).pipe(catchError(() => of(EMPTY_DEVICE_RATING))).subscribe((rating) => {
+      this.deviceRating.set(rating);
     });
   }
 

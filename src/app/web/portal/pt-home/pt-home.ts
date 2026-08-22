@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
@@ -18,8 +18,10 @@ import { SgB2412519 } from '../../../services/backend/java/spring/sg-b2412519/sg
 import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
 import { AuthSession } from '../../../services/core/auth-session/auth-session';
+import { CommentSync } from '../../../services/core/comment-sync/comment-sync';
 
 interface FilterOption {
+  count: number;
   id: number;
   image?: string;
   label: string;
@@ -88,6 +90,7 @@ export class PtHome implements OnInit, OnDestroy {
   private readonly deviceService = inject(SgB8043c54);
   private readonly commentService = inject(SgB9f50faa);
   private readonly userService = inject(SgB2412519);
+  private readonly commentSync = inject(CommentSync);
   readonly authSession = inject(AuthSession);
 
   readonly commentAuthorLoading = signal(false);
@@ -127,6 +130,13 @@ export class PtHome implements OnInit, OnDestroy {
     const start = (this.page() - 1) * this.pageSize;
     return this.sortedProducts().slice(start, start + this.pageSize);
   });
+
+  constructor() {
+    effect(() => {
+      const event = this.commentSync.latest();
+      if (event) this.synchronizeCommentData(event.deviceId);
+    });
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -215,6 +225,7 @@ export class PtHome implements OnInit, OnDestroy {
       next: () => {
         this.cancelCommentForm();
         this.loadComments(deviceId);
+        this.commentSync.publish(deviceId);
         void Swal.fire({ icon: 'success', title: 'Opinión publicada', confirmButtonText: 'Aceptar', timer: 1800, timerProgressBar: true });
       },
       error: () => {
@@ -248,6 +259,19 @@ export class PtHome implements OnInit, OnDestroy {
       this.deviceRating.set(rating);
       this.productRatings.update((ratings) => ({ ...ratings, [deviceId]: rating }));
       this.commentsLoading.set(false);
+    });
+  }
+
+  private synchronizeCommentData(deviceId: number): void {
+    if (!this.products().some((product) => product.id === deviceId)) return;
+
+    if (this.commentsModalOpen() && this.commentsDeviceId() === deviceId) {
+      this.loadComments(deviceId);
+      return;
+    }
+
+    this.commentService.getDeviceRating(deviceId).pipe(catchError(() => of(EMPTY_DEVICE_RATING))).subscribe((rating) => {
+      this.productRatings.update((ratings) => ({ ...ratings, [deviceId]: rating }));
     });
   }
 
@@ -342,13 +366,14 @@ export class PtHome implements OnInit, OnDestroy {
       operatingSystem: this.operatingSystemService.getAll().pipe(catchError(() => of([]))),
       devices: this.deviceService.getAll().pipe(catchError(() => of([]))),
     }).subscribe(({ brandDevice, brandProcessor, typeProcessor, graphicCard, operatingSystem, devices }) => {
-      this.setOptions('brand-device', this.toFilterOptions(brandDevice));
-      this.setOptions('brand-processor', this.toFilterOptions(brandProcessor));
-      const processorBrandImages = new Map(brandProcessor.map((brand) => [brand.idRegister, brand.fdImage]));
-      this.setOptions('type-processor', this.toFilterOptions(typeProcessor, (type) => processorBrandImages.get(type.brandProcessorId)));
-      this.setOptions('graphic-card', this.toFilterOptions(graphicCard));
-      this.setOptions('operating-system', this.toFilterOptions(operatingSystem));
       const products = this.toProducts(devices, typeProcessor, graphicCard, operatingSystem, brandProcessor);
+      const countProducts = (matcher: (product: ProductCard) => boolean) => products.filter(matcher).length;
+      const processorBrandImages = new Map(brandProcessor.map((brand) => [brand.idRegister, brand.fdImage]));
+      this.setOptions('brand-device', this.toFilterOptions(brandDevice, undefined, (item) => countProducts((product) => product.brandDeviceId === item.idRegister)));
+      this.setOptions('brand-processor', this.toFilterOptions(brandProcessor, undefined, (item) => countProducts((product) => product.processorBrandId === item.idRegister)));
+      this.setOptions('type-processor', this.toFilterOptions(typeProcessor, (type) => processorBrandImages.get(type.brandProcessorId), (item) => countProducts((product) => product.typeProcessorId === item.idRegister)));
+      this.setOptions('graphic-card', this.toFilterOptions(graphicCard, undefined, (item) => countProducts((product) => product.graphicCardId === item.idRegister)));
+      this.setOptions('operating-system', this.toFilterOptions(operatingSystem, undefined, (item) => countProducts((product) => product.operatingSystemId === item.idRegister)));
       this.products.set(products);
       this.productRatings.set({});
       forkJoin(products.map((product) => this.commentService.getDeviceRating(product.id).pipe(catchError(() => of(EMPTY_DEVICE_RATING))))).subscribe((ratings) => {
@@ -439,8 +464,10 @@ export class PtHome implements OnInit, OnDestroy {
   private toFilterOptions<T extends { fdImage?: string; fdName?: string; idRegister?: number; name?: string }>(
     items: T[],
     imageResolver?: (item: T) => string | undefined,
+    countResolver?: (item: T) => number,
   ): FilterOption[] {
     return items.map((item) => ({
+      count: countResolver?.(item) ?? 0,
       id: item.idRegister ?? 0,
       image: imageResolver?.(item) ?? item.fdImage,
       label: item.name ?? item.fdName ?? 'Sin nombre',

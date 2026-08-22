@@ -12,7 +12,8 @@
                 <div class="form-check filter-option mb-2">
                   <input class="form-check-input" type="checkbox" [id]="filter.key + '-' + option.id" [checked]="option.selected" (change)="toggleOption(filter.key, option.id, $any($event.target).checked)" />
                   <label class="form-check-label" [for]="filter.key + '-' + option.id">
-                    <span>{{ option.label }}</span>
+                    <span class="filter-option-label">{{ option.label }}</span>
+                    <span class="filter-option-count">{{ option.count }}</span>
                     @if (option.image) {
                       <img class="filter-option-image" [src]="productImage(option.image)" alt="" />
                     } @else {
