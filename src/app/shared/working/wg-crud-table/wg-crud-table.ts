@@ -646,6 +646,8 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
         zeroRecords: 'No se encontraron coincidencias',
       },
       pageLength: 10,
+      scrollCollapse: true,
+      scrollX: true,
     });
   }
 

@@ -34,6 +34,64 @@ body.comments-modal-open {
   overflow: hidden;
 }
 
+/* Transiciones compartidas para los modales renderizados por Angular.
+   Los modales se agregan con @if, por lo que Bootstrap no puede gestionar su
+   ciclo de apertura/cierre mediante JavaScript. */
+@keyframes app-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes app-modal-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes app-modal-dialog-in {
+  from { opacity: 0; transform: translateY(-3rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes app-modal-dialog-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-1rem); }
+}
+
+.app-modal-enter {
+  animation: app-modal-fade-in .15s linear both;
+}
+
+.app-modal-enter .modal-dialog {
+  animation: app-modal-dialog-in .3s ease-out both;
+}
+
+.app-modal-leave {
+  animation: app-modal-fade-out .15s linear both;
+}
+
+.app-modal-leave .modal-dialog {
+  animation: app-modal-dialog-out .2s ease-in both;
+}
+
+.app-backdrop-enter {
+  animation: app-modal-fade-in .15s linear both;
+}
+
+.app-backdrop-leave {
+  animation: app-modal-fade-out .18s linear both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-modal-enter,
+  .app-modal-enter .modal-dialog,
+  .app-modal-leave,
+  .app-modal-leave .modal-dialog,
+  .app-backdrop-enter,
+  .app-backdrop-leave {
+    animation-duration: 1ms;
+  }
+}
+
 .working-content main > router-outlet + * {
   display: flex;
   flex: 1;

@@ -46,22 +46,26 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  min-width: max-content;
+  min-width: 0;
+  width: 100%;
 }
 
 :host ::ng-deep .table-card table.dataTable {
-  min-width: 100% !important;
-  width: max-content !important;
+  min-width: max-content !important;
 }
 
-:host ::ng-deep .table-card .dt-layout-row:nth-child(2) {
+:host ::ng-deep .table-card .dt-scroll {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
-  overflow: auto;
+  min-width: 0;
 }
 
-:host ::ng-deep .table-card .dt-layout-row:nth-child(2) .dt-layout-cell {
-  min-width: max-content;
+:host ::ng-deep .table-card .dt-scroll-body {
+  flex: 1;
+  max-width: 100%;
+  overflow: auto !important;
 }
 
 .selectable-row {

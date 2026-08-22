@@ -74,7 +74,7 @@
 </section>
 
 @if (showFormModal()) {
-  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+  <div class="modal d-block" animate.enter="app-modal-enter" animate.leave="app-modal-leave" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered" role="document">
       <form class="modal-form" [formGroup]="form" (ngSubmit)="submit()">
         <div class="modal-content">
@@ -163,11 +163,11 @@
       </form>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+  <div class="modal-backdrop fade show" animate.enter="app-backdrop-enter" animate.leave="app-backdrop-leave"></div>
 }
 
 @if (showImageModal()) {
-  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+  <div class="modal d-block" animate.enter="app-modal-enter" animate.leave="app-modal-leave" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
@@ -183,11 +183,11 @@
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+  <div class="modal-backdrop fade show" animate.enter="app-backdrop-enter" animate.leave="app-backdrop-leave"></div>
 }
 
 @if (showDetailModal()) {
-  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+  <div class="modal d-block" animate.enter="app-modal-enter" animate.leave="app-modal-leave" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header bg-primary text-white">
@@ -203,11 +203,11 @@
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+  <div class="modal-backdrop fade show" animate.enter="app-backdrop-enter" animate.leave="app-backdrop-leave"></div>
 }
 
 @if (showPasswordModal()) {
-  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+  <div class="modal d-block" animate.enter="app-modal-enter" animate.leave="app-modal-leave" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
       <form class="modal-form" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
         <div class="modal-content">
@@ -233,5 +233,5 @@
       </form>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+  <div class="modal-backdrop fade show" animate.enter="app-backdrop-enter" animate.leave="app-backdrop-leave"></div>
 }
