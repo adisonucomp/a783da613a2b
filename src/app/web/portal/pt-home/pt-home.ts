@@ -1,15 +1,17 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import { MdA6ac2e09 } from '../../../interfaces/working/md-a6ac2e09';
 import { MdB2c17bdf } from '../../../interfaces/working/md-b2c17bdf';
 import { MdB8043c54 } from '../../../interfaces/working/md-b8043c54';
+import { MdB9f50faa } from '../../../interfaces/working/md-b9f50faa';
 import { MdD0112a5a } from '../../../interfaces/working/md-d0112a5a';
 import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg-a6ac2e09';
 import { SgB2c17bdf } from '../../../services/backend/java/spring/sg-b2c17bdf/sg-b2c17bdf';
 import { SgB4c4c7b1 } from '../../../services/backend/java/spring/sg-b4c4c7b1/sg-b4c4c7b1';
 import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg-b8043c54';
+import { SgB9f50faa } from '../../../services/backend/java/spring/sg-b9f50faa/sg-b9f50faa';
 import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
 
@@ -53,9 +55,10 @@ type ProductSort = 'graphic-card' | 'operating-system' | 'price-asc' | 'price-de
   styleUrl: './pt-home.css',
   templateUrl: './pt-home.html',
 })
-export class PtHome implements OnInit {
+export class PtHome implements OnInit, OnDestroy {
   private readonly filtersCacheKey = 'portalHomeFilters';
   private readonly filtersCacheLifetime = 5 * 60_000;
+  private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly brandDeviceService = inject(SgB4c4c7b1);
   private readonly brandProcessorService = inject(SgC98391c6);
@@ -63,12 +66,18 @@ export class PtHome implements OnInit {
   private readonly graphicCardService = inject(SgA6ac2e09);
   private readonly operatingSystemService = inject(SgD0112a5a);
   private readonly deviceService = inject(SgB8043c54);
+  private readonly commentService = inject(SgB9f50faa);
 
+  readonly commentsLoading = signal(false);
+  readonly commentsModalOpen = signal(false);
+  readonly commentsProductName = signal('');
   readonly loadingFilters = signal(true);
   readonly loadingProducts = signal(true);
   readonly page = signal(1);
   readonly pageSize = 25;
   readonly products = signal<ProductCard[]>([]);
+  readonly productComments = signal<MdB9f50faa[]>([]);
+  readonly ratingStars = [1, 2, 3, 4, 5];
   readonly sort = signal<ProductSort>('release-desc');
   readonly filters = signal<FilterSection[]>([
     { key: 'brand-device', title: 'Marcas de Dispositivos', options: [] },
@@ -94,6 +103,32 @@ export class PtHome implements OnInit {
 
     this.restoreFiltersFromCache();
     this.loadCatalog();
+  }
+
+  ngOnDestroy(): void {
+    this.document.body.classList.remove('comments-modal-open');
+  }
+
+  openComments(product: ProductCard): void {
+    this.commentsProductName.set(product.name);
+    this.productComments.set([]);
+    this.commentsLoading.set(true);
+    this.commentsModalOpen.set(true);
+    this.document.body.classList.add('comments-modal-open');
+
+    this.commentService.getAll().pipe(catchError(() => of([]))).subscribe((comments) => {
+      this.productComments.set(
+        comments
+          .filter((comment) => comment.deviceId === product.id)
+          .sort((left, right) => `${right.fdDate} ${right.fdHour}`.localeCompare(`${left.fdDate} ${left.fdHour}`)),
+      );
+      this.commentsLoading.set(false);
+    });
+  }
+
+  closeComments(): void {
+    this.commentsModalOpen.set(false);
+    this.document.body.classList.remove('comments-modal-open');
   }
 
   toggleOption(sectionKey: string, optionId: number, checked: boolean): void {
@@ -123,6 +158,14 @@ export class PtHome implements OnInit {
 
   formatPrice(price: number): string {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
+  }
+
+  formatCommentDate(comment: MdB9f50faa): string {
+    const parsedDate = new Date(`${comment.fdDate}T${comment.fdHour || '00:00:00'}`);
+    if (Number.isNaN(parsedDate.valueOf())) {
+      return [comment.fdDate, comment.fdHour].filter(Boolean).join(' ');
+    }
+    return new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' }).format(parsedDate);
   }
 
   productImage(image: string): string {

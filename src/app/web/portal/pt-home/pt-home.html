@@ -75,7 +75,10 @@
                           <tr><th scope="row">Precio</th><td class="fw-semibold text-primary">{{ formatPrice(product.price) }}</td><td></td></tr>
                         </tbody>
                       </table>
-                      <a class="btn btn-primary w-100" [routerLink]="['/portal/product', product.id]">Detalle</a>
+                      <div class="d-flex gap-2">
+                        <a class="btn btn-primary flex-grow-1" [routerLink]="['/portal/product', product.id]">Detalle</a>
+                        <button class="btn btn-outline-primary" type="button" (click)="openComments(product)"><i class="bi bi-chat-left-text me-1"></i>Comentarios</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -96,3 +99,37 @@
     </div>
   </div>
 </div>
+
+@if (commentsModalOpen()) {
+  <div class="modal d-block comments-modal" tabindex="-1" role="dialog" aria-modal="true" aria-label="Comentarios del producto">
+    <div class="modal-dialog modal-dialog-scrollable comments-modal-dialog" role="document">
+      <div class="modal-content h-100">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title fs-5 mb-0">Comentarios</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeComments()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-3">{{ commentsProductName() }}</p>
+          @if (commentsLoading()) {
+            <p class="text-body-secondary mb-0">Cargando comentarios...</p>
+          } @else {
+            @for (comment of productComments(); track comment.idRegister) {
+              <article class="comment-item py-3">
+                <div class="d-flex justify-content-between gap-3 mb-2">
+                  <span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">
+                    @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }
+                  </span>
+                  <small class="text-body-secondary text-end">{{ formatCommentDate(comment) }}</small>
+                </div>
+                <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
+              </article>
+            } @empty {
+              <p class="text-body-secondary mb-0">Este producto aún no tiene comentarios.</p>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
