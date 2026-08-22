@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, PLATFORM_ID, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, concatMap, from, toArray } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SgA6ac2e09 } from '../../../services/backend/java/spring/sg-a6ac2e09/sg-a6ac2e09';
 import { SgB22b6431 } from '../../../services/backend/java/spring/sg-b22b6431/sg-b22b6431';
@@ -12,6 +12,7 @@ import { SgB8043c54 } from '../../../services/backend/java/spring/sg-b8043c54/sg
 import { SgC0de7562 } from '../../../services/backend/java/spring/sg-c0de7562/sg-c0de7562';
 import { SgC98391c6 } from '../../../services/backend/java/spring/sg-c98391c6/sg-c98391c6';
 import { SgD0112a5a } from '../../../services/backend/java/spring/sg-d0112a5a/sg-d0112a5a';
+import { SgD148f4b4 } from '../../../services/backend/java/spring/sg-d148f4b4/sg-d148f4b4';
 
 export type WgRelation =
   | 'brand-device'
@@ -63,6 +64,13 @@ interface RelationOption {
   label: string;
 }
 
+interface AdditionalDeviceImage {
+  fdData: string;
+  fdOrder: number;
+  idRegister?: number;
+  imageExtId: number;
+}
+
 @Component({
   imports: [ReactiveFormsModule],
   selector: 'app-wg-crud-table',
@@ -73,12 +81,14 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   @Input({ required: true }) fields: WgCrudField[] = [];
   @Input({ required: true }) service!: unknown;
   @Input({ required: true }) title = '';
+  @Input() supportsAdditionalImages = false;
   @Input() showPasswordAction = false;
 
   @ViewChild('dataTable') private readonly dataTableElement?: ElementRef<HTMLTableElement>;
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly deviceImageService = inject(SgD148f4b4);
   private readonly lookupServices: Record<WgRelation, { getAll: () => Observable<unknown[]> }> = {
     'brand-device': inject(SgB4c4c7b1),
     'brand-processor': inject(SgC98391c6),
@@ -94,9 +104,13 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   private loadId = 0;
   private tableIsReady = false;
   private selectedId?: number;
+  private additionalImagesLoadedFor?: number;
 
   readonly editing = signal(false);
   readonly allowedImageExtensions = signal<string[]>([]);
+  readonly additionalDeviceImages = signal<AdditionalDeviceImage[]>([]);
+  readonly additionalImagesLoading = signal(false);
+  readonly additionalImagesSaving = signal(false);
   readonly form = this.formBuilder.group({});
   readonly imageNames = signal<Record<string, string>>({});
   readonly imagePreviews = signal<Record<string, string>>({});
@@ -111,6 +125,7 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
   readonly selectedRecord = signal<WgRecord | null>(null);
   readonly showFormModal = signal(false);
   readonly showDetailModal = signal(false);
+  readonly showAdditionalImagesModal = signal(false);
   readonly showImageModal = signal(false);
   readonly showPasswordModal = signal(false);
   readonly detailContent = signal('');
@@ -220,6 +235,104 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
 
   closeFormModal(): void {
     this.showFormModal.set(false);
+  }
+
+  openAdditionalImagesModal(): void {
+    const deviceId = this.selectedRecord()?.idRegister;
+    if (!this.supportsAdditionalImages || typeof deviceId !== 'number') {
+      return;
+    }
+
+    this.showAdditionalImagesModal.set(true);
+    this.loadImageExtensions();
+    this.loadAdditionalDeviceImages(deviceId);
+  }
+
+  closeAdditionalImagesModal(): void {
+    this.showAdditionalImagesModal.set(false);
+  }
+
+  onAdditionalImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (files.length) {
+      void this.addAdditionalImageFiles(files);
+    }
+    input.value = '';
+  }
+
+  onAdditionalImagesDrop(event: DragEvent): void {
+    event.preventDefault();
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) {
+      void this.addAdditionalImageFiles(files);
+    }
+  }
+
+  moveAdditionalImage(index: number, offset: -1 | 1): void {
+    const targetIndex = index + offset;
+    const images = [...this.additionalDeviceImages()];
+    if (targetIndex < 0 || targetIndex >= images.length) {
+      return;
+    }
+
+    const first = images[index];
+    const second = images[targetIndex];
+    if (typeof first.idRegister !== 'number' || typeof second.idRegister !== 'number') {
+      return;
+    }
+
+    [images[index], images[targetIndex]] = [images[targetIndex], images[index]];
+    const reorderedImages = this.withConsecutiveImageOrder(images);
+    const deviceId = this.additionalImagesLoadedFor;
+    if (deviceId === undefined) {
+      return;
+    }
+
+    this.additionalDeviceImages.set(reorderedImages);
+    this.additionalImagesSaving.set(true);
+    from([reorderedImages[index], reorderedImages[targetIndex]])
+      .pipe(concatMap((image) => this.deviceImageService.update(image.idRegister!, this.additionalImagePayload(image, deviceId))), toArray())
+      .subscribe({
+        next: () => this.additionalImagesSaving.set(false),
+        error: () => {
+          this.additionalImagesSaving.set(false);
+          this.showMessage('error', 'No fue posible actualizar el orden de las imágenes.');
+          this.loadAdditionalDeviceImages(deviceId);
+        },
+      });
+  }
+
+  removeAdditionalImage(index: number): void {
+    const image = this.additionalDeviceImages()[index];
+    if (!image || typeof image.idRegister !== 'number') {
+      return;
+    }
+
+    this.additionalImagesSaving.set(true);
+    this.deviceImageService.delete(image.idRegister).subscribe({
+      next: () => {
+        this.additionalImagesSaving.set(false);
+        this.additionalDeviceImages.update((images) =>
+          this.withConsecutiveImageOrder(images.filter((_, currentIndex) => currentIndex !== index)),
+        );
+        this.persistCurrentAdditionalImageOrder();
+      },
+      error: () => {
+        this.additionalImagesSaving.set(false);
+        this.showMessage('error', 'No fue posible quitar la imagen.');
+      },
+    });
+  }
+
+  additionalImageExtension(image: AdditionalDeviceImage): string {
+    return (this.relationOptions()['image-ext'] ?? []).find((option) => option.id === image.imageExtId)?.label ?? '—';
+  }
+
+  additionalImagePreview(image: AdditionalDeviceImage): string {
+    const extension = this.additionalImageExtension(image).trim().replace(/^\./, '').toLowerCase();
+    const mimeType = this.imageMimeType(extension);
+    return `data:${mimeType};base64,${image.fdData}`;
   }
 
   openDetailModal(record: WgRecord, field: WgCrudField): void {
@@ -561,6 +674,169 @@ export class WgCrudTable implements AfterViewInit, OnDestroy {
       this.imageNames.update((names) => ({ ...names, [field.key]: file.name }));
     };
     reader.readAsDataURL(file);
+  }
+
+  private async addAdditionalImageFiles(files: File[]): Promise<void> {
+    const allowedExtensions = this.allowedImageExtensions();
+    const candidates = files.filter((file) => {
+      const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+      return allowedExtensions.includes(extension);
+    });
+
+    if (!candidates.length) {
+      this.showMessage('warning', `Seleccione imágenes permitidas (${this.allowedImageExtensionsLabel()}).`);
+      return;
+    }
+
+    if (candidates.length !== files.length) {
+      this.showMessage('warning', 'Se omitieron archivos con extensiones no permitidas.');
+    }
+
+    const options = this.relationOptions()['image-ext'] ?? [];
+    const filesWithExtension = candidates
+      .map((file) => {
+        const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+        const option = options.find((item) => item.label.trim().replace(/^\./, '').toLowerCase() === extension);
+        return option ? { file, imageExtId: option.id } : null;
+      })
+      .filter((item): item is { file: File; imageExtId: number } => item !== null);
+
+    if (!filesWithExtension.length) {
+      this.showMessage('warning', 'No existe una extensión registrada para las imágenes seleccionadas.');
+      return;
+    }
+
+    const data = await Promise.all(filesWithExtension.map(async ({ file, imageExtId }) => ({
+      fdData: await this.readFileAsBase64(file),
+      imageExtId,
+    })));
+
+    const deviceId = this.additionalImagesLoadedFor;
+    if (deviceId === undefined) {
+      this.showMessage('warning', 'Seleccione un dispositivo antes de cargar imágenes adicionales.');
+      return;
+    }
+
+    const startingOrder = this.additionalDeviceImages().length;
+    const imagePayloads = data.map((image, index) => ({
+      ...image,
+      deviceId,
+      fdOrder: startingOrder + index + 1,
+    }));
+
+    this.additionalImagesSaving.set(true);
+    from(imagePayloads)
+      .pipe(concatMap((payload) => this.deviceImageService.create(payload)), toArray())
+      .subscribe({
+        next: (savedImages) => {
+          this.additionalImagesSaving.set(false);
+          this.additionalDeviceImages.update((images) => this.withConsecutiveImageOrder([
+            ...images,
+            ...savedImages.map((image) => ({
+              fdData: image.fdData,
+              fdOrder: image.fdOrder,
+              idRegister: image.idRegister,
+              imageExtId: image.imageExtId,
+            })),
+          ]));
+        },
+        error: () => {
+          this.additionalImagesSaving.set(false);
+          this.showMessage('error', 'No fue posible guardar las imágenes adicionales.');
+          this.loadAdditionalDeviceImages(deviceId);
+        },
+      });
+  }
+
+  private readFileAsBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = typeof reader.result === 'string' ? reader.result : '';
+        const base64 = dataUrl.split(',')[1] ?? '';
+        base64 ? resolve(base64) : reject(new Error('No se pudo leer la imagen.'));
+      };
+      reader.onerror = () => reject(reader.error ?? new Error('No se pudo leer la imagen.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  private loadAdditionalDeviceImages(deviceId: number): void {
+    this.additionalImagesLoading.set(true);
+    this.deviceImageService.getAll().subscribe({
+      next: (images) => {
+        const relatedImages = images
+          .filter((image) => image.deviceId === deviceId)
+          .sort((first, second) => first.fdOrder - second.fdOrder)
+          .map((image) => ({
+            fdData: image.fdData,
+            fdOrder: image.fdOrder,
+            idRegister: image.idRegister,
+            imageExtId: image.imageExtId,
+          }));
+        this.additionalDeviceImages.set(this.withConsecutiveImageOrder(relatedImages));
+        this.additionalImagesLoadedFor = deviceId;
+        this.additionalImagesLoading.set(false);
+      },
+      error: () => {
+        this.additionalDeviceImages.set([]);
+        this.additionalImagesLoadedFor = deviceId;
+        this.additionalImagesLoading.set(false);
+        this.showMessage('error', 'No fue posible cargar las imágenes adicionales.');
+      },
+    });
+  }
+
+  private persistCurrentAdditionalImageOrder(): void {
+    const deviceId = this.additionalImagesLoadedFor;
+    const images = this.additionalDeviceImages();
+    if (deviceId === undefined || !images.length) {
+      return;
+    }
+
+    this.additionalImagesSaving.set(true);
+    from(images)
+      .pipe(concatMap((image) => this.deviceImageService.update(image.idRegister!, this.additionalImagePayload(image, deviceId))), toArray())
+      .subscribe({
+        next: () => this.additionalImagesSaving.set(false),
+        error: () => {
+          this.additionalImagesSaving.set(false);
+          this.showMessage('error', 'No fue posible actualizar el orden de las imágenes.');
+          this.loadAdditionalDeviceImages(deviceId);
+        },
+      });
+  }
+
+  private additionalImagePayload(image: AdditionalDeviceImage, deviceId: number): {
+    deviceId: number;
+    fdData: string;
+    fdOrder: number;
+    imageExtId: number;
+  } {
+    return {
+      deviceId,
+      fdData: image.fdData,
+      fdOrder: image.fdOrder,
+      imageExtId: image.imageExtId,
+    };
+  }
+
+  private withConsecutiveImageOrder(images: AdditionalDeviceImage[]): AdditionalDeviceImage[] {
+    return images.map((image, index) => ({ ...image, fdOrder: index + 1 }));
+  }
+
+  private imageMimeType(extension: string): string {
+    const mimeTypes: Record<string, string> = {
+      avif: 'image/avif',
+      gif: 'image/gif',
+      ico: 'image/x-icon',
+      jpeg: 'image/jpeg',
+      jpg: 'image/jpeg',
+      png: 'image/png',
+      svg: 'image/svg+xml',
+      webp: 'image/webp',
+    };
+    return mimeTypes[extension] ?? 'image/png';
   }
 
   private toImagePreview(image: string): string {

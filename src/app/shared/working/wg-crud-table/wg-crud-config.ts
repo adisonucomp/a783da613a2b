@@ -3,6 +3,7 @@ import { WgCrudField } from './wg-crud-table';
 export interface WgCrudConfig {
   fields: WgCrudField[];
   showPasswordAction?: boolean;
+  supportsAdditionalImages?: boolean;
   title: string;
 }
 
@@ -50,6 +51,7 @@ export const brandDeviceConfig: WgCrudConfig = {
 
 export const deviceDataConfig: WgCrudConfig = {
   title: 'Dispositivos',
+  supportsAdditionalImages: true,
   fields: [
     { key: 'fdCode', label: 'Código' },
     { key: 'fdName', label: 'Nombre' },
