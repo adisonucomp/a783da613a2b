@@ -3,7 +3,10 @@
     <p class="text-body-secondary">Cargando producto...</p>
   } @else if (device(); as product) {
     <a class="back-link d-inline-block mb-3" routerLink="/portal/home"><i class="bi bi-chevron-left"></i> Volver a productos</a>
-    <h1 class="h3 mb-4">{{ product.fdName }}</h1>
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+      <h1 class="h3 mb-0">{{ product.fdName }}</h1>
+      <button class="btn btn-outline-primary flex-shrink-0" type="button" (click)="openComments()"><i class="bi bi-chat-left-text me-1"></i>Comentarios</button>
+    </div>
 
     <div class="row g-4 align-items-stretch">
       <div class="col-12 col-lg-3">
@@ -150,6 +153,101 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+
+@if (commentsModalOpen()) {
+  <div class="modal d-block comments-modal" tabindex="-1" role="dialog" aria-modal="true" aria-label="Comentarios del producto">
+    <div class="modal-dialog modal-dialog-scrollable comments-modal-dialog" role="document">
+      <div class="modal-content h-100">
+        <div class="modal-header bg-primary text-white">
+          <h2 class="modal-title fs-5 mb-0">{{ commentFormOpen() ? 'Escribir opinión' : 'Comentarios' }}</h2>
+          <button class="btn-close btn-close-white" type="button" aria-label="Cerrar" (click)="closeComments()"></button>
+        </div>
+        <div class="modal-body">
+          @if (commentFormOpen()) {
+            <p class="fw-semibold mb-3">{{ device()?.fdName }}</p>
+            <form id="comment-form" class="comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+              <div class="mb-3">
+                <label class="form-label" for="fdRating">Calificación <span class="text-danger">*</span></label>
+                <div id="fdRating" class="rating-input" role="radiogroup" aria-label="Calificación">
+                  @for (rating of ratingStars; track rating) {
+                    <button class="rating-star" type="button" [class.active]="rating <= commentForm.controls.fdRating.value" [attr.aria-label]="rating + ' estrellas'" (click)="setCommentRating(rating)">
+                      <i class="bi" [class.bi-star-fill]="rating <= commentForm.controls.fdRating.value" [class.bi-star]="rating > commentForm.controls.fdRating.value"></i>
+                    </button>
+                  }
+                  <span class="small text-body-secondary ms-2">{{ commentForm.controls.fdRating.value }} de 5</span>
+                </div>
+              </div>
+              <div class="comment-content-group mb-0">
+                <label class="form-label" for="fdContent">Opinión <span class="text-danger">*</span></label>
+                <textarea id="fdContent" class="form-control" rows="7" maxlength="2000" formControlName="fdContent" placeholder="Escriba su opinión sobre el producto..."></textarea>
+                @if (commentForm.controls.fdContent.touched && commentForm.controls.fdContent.invalid) { <div class="invalid-feedback d-block">La opinión es obligatoria.</div> }
+              </div>
+            </form>
+          } @else {
+            <p class="fw-semibold mb-3">{{ device()?.fdName }}</p>
+            @if (commentsLoading()) {
+              <p class="text-body-secondary mb-0">Cargando comentarios...</p>
+            } @else {
+              <div class="row g-2 rating-summary mb-3">
+                <div class="col-12 col-sm-5">
+                  <section class="card h-100 rating-score-card"><div class="card-body text-center py-3">
+                    <div class="display-5 fw-semibold">{{ formatAverageRating(deviceRating().averageRating) }}</div>
+                    <div class="comment-rating my-1" [attr.aria-label]="deviceRating().averageRating + ' de 5 estrellas'">
+                      @for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= deviceRating().averageRating" [class.bi-star]="star > deviceRating().averageRating"></i> }
+                    </div>
+                    <small class="text-body-secondary">{{ deviceRating().opinionCount }} {{ deviceRating().opinionCount === 1 ? 'opinión' : 'opiniones' }}</small>
+                  </div></section>
+                </div>
+                <div class="col-12 col-sm-7">
+                  <section class="card h-100 rating-distribution-card"><div class="card-body py-3">
+                    @for (rating of ratingLevels; track rating) {
+                      <div class="rating-distribution-row">
+                        <span class="rating-distribution-label">{{ rating }} <i class="bi bi-star-fill"></i></span>
+                        <div class="progress" role="progressbar" [attr.aria-label]="rating + ' estrellas'" [attr.aria-valuenow]="ratingPercentage(rating)" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-warning" [style.width.%]="ratingPercentage(rating)"></div></div>
+                        <span class="rating-distribution-count">{{ ratingCount(rating) }}</span>
+                      </div>
+                    }
+                  </div></section>
+                </div>
+              </div>
+              <div class="comments-list">
+                @for (comment of productComments(); track comment.idRegister) {
+                  <article class="comment-item">
+                    <div class="row g-2 mb-2">
+                      <div class="col-12"><h3 class="h6 mb-0"><i class="bi bi-person-circle me-1"></i>{{ comment.userName }}</h3></div>
+                      <div class="col-6"><span class="comment-rating" [attr.aria-label]="comment.fdRating + ' de 5 estrellas'">@for (star of ratingStars; track star) { <i class="bi" [class.bi-star-fill]="star <= comment.fdRating" [class.bi-star]="star > comment.fdRating"></i> }</span></div>
+                      <div class="col-6 text-end"><small class="text-body-secondary">{{ formatCommentDate(comment) }}</small></div>
+                    </div>
+                    <p class="mb-0 comment-content">{{ comment.fdContent }}</p>
+                  </article>
+                } @empty {
+                  <p class="text-body-secondary mb-0">Este producto aún no tiene comentarios.</p>
+                }
+              </div>
+            }
+          }
+        </div>
+        <div class="modal-footer">
+          @if (commentFormOpen()) {
+            <button class="btn btn-outline-secondary" type="button" [disabled]="commentSubmitting()" (click)="cancelCommentForm()">Volver</button>
+            <button class="btn btn-primary" type="submit" form="comment-form" [disabled]="commentSubmitting()">
+              @if (commentSubmitting()) { <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Publicando... } @else { Publicar opinión }
+            </button>
+          } @else {
+            <button class="btn btn-outline-secondary" type="button" (click)="closeComments()">Cerrar</button>
+            <div>
+              <button class="btn btn-primary" type="button" [disabled]="!authSession.isAuthenticated() || commentAuthorLoading()" (click)="openCommentForm()">
+                @if (commentAuthorLoading()) { <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Preparando... } @else { Escribir opinión }
+              </button>
+              @if (!authSession.isAuthenticated()) { <small class="d-block text-body-secondary mt-1">Inicie sesión para escribir una opinión.</small> }
+            </div>
+          }
         </div>
       </div>
     </div>

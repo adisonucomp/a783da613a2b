@@ -26,4 +26,27 @@
 .modal-thumbnail { align-items: center; background: var(--bs-body-bg); border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); display: flex; flex: 0 0 5.5rem; height: 5.5rem; justify-content: center; padding: .25rem; }
 .modal-thumbnail.active { border-color: var(--bs-primary); box-shadow: 0 0 0 .15rem rgba(var(--bs-primary-rgb), .25); }
 .modal-thumbnail img { height: 4.75rem; max-width: 100%; object-fit: contain; }
+.comments-modal { z-index: 1061; }
+.comments-modal-dialog { height: calc(100dvh - 1rem); margin: .5rem .5rem .5rem auto; max-width: min(calc(100vw - 1rem), 28rem); }
+.comments-modal .modal-content { border-radius: var(--bs-border-radius); }
+.comments-modal .modal-body:has(.comment-form), .comments-modal .modal-body:has(.comments-list) { display: flex; flex-direction: column; min-height: 0; }
+.comments-modal .modal-body:has(.comments-list) { overflow: hidden; }
+.comment-form { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.rating-input { align-items: center; display: flex; }
+.rating-star { background: transparent; border: 0; color: var(--bs-secondary-color); font-size: 1.65rem; line-height: 1; padding: 0 .12rem; }
+.rating-star.active, .rating-star:hover, .comment-rating, .rating-distribution-label { color: #ffc107; }
+.rating-star:focus-visible { border-radius: var(--bs-border-radius); outline: 2px solid var(--bs-primary); outline-offset: 2px; }
+.comment-content-group { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.comment-content-group textarea { flex: 1; min-height: 12rem; resize: vertical; }
+.comments-list { flex: 1; min-height: 0; overflow-y: auto; padding-right: .25rem; }
+.comment-item { border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); margin-bottom: 1rem; padding: 1rem; }
+.comment-rating { letter-spacing: .1rem; white-space: nowrap; }
+.comment-content { overflow-wrap: anywhere; white-space: pre-wrap; }
+.rating-score-card .display-5 { line-height: 1; }
+.rating-distribution-row { align-items: center; display: flex; gap: .45rem; }
+.rating-distribution-row + .rating-distribution-row { margin-top: .4rem; }
+.rating-distribution-label { flex: 0 0 3.1rem; font-size: .8rem; }
+.rating-distribution-row .progress { background-color: var(--bs-tertiary-bg); flex: 1; height: .4rem; }
+.rating-distribution-count { flex: 0 0 1.25rem; font-size: .8rem; text-align: right; }
+@media (max-width: 575.98px) { .comments-modal-dialog { height: calc(100dvh - .5rem); margin: .25rem .25rem .25rem auto; max-width: calc(100vw - .5rem); } }
 @media (max-width: 991.98px) { .gallery-card, .main-image-card, .purchase-card { min-height: auto; } .gallery-scroll { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; } .thumbnail-card { min-width: 5.4rem; } .main-image { height: 22rem; } }
